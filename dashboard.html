@@ -22,38 +22,35 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// 🔒 Esconde a tela até verificar login
-document.body.style.display = "none";
+// 🔥 ESCONDE tudo até saber o estado real
+document.body.style.visibility = "hidden";
 
 onAuthStateChanged(auth, (user) => {
-  // mostra a página depois da verificação
-  document.body.style.display = "block";
+  if (user === null) {
+    // ainda não carregou OU realmente não logado
+    setTimeout(() => {
+      if (!auth.currentUser) {
+        window.location.href = "index.html";
+      }
+    }, 500); // espera meio segundo
+  } else {
+    // usuário confirmado
+    document.body.style.visibility = "visible";
 
-  if (user) {
-    // usuário logado
     const userElement = document.getElementById("user");
     if (userElement) {
       userElement.innerText = "👤 " + user.email;
     }
-  } else {
-    // não logado → volta pro login
-    window.location.href = "index.html";
   }
 });
 
-// 🚪 logout
+// logout
 window.logout = function() {
-  signOut(auth)
-    .then(() => {
-      window.location.href = "login.html";
-    })
-    .catch((error) => {
-      console.error("Erro ao sair:", error);
-      alert("Erro ao sair");
-    });
+  signOut(auth).then(() => {
+    window.location.href = "index.html";
+  });
 };
 </script>
-
 <body>
 
 <div class="app">
