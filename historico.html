@@ -32,7 +32,7 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
       document.getElementById("user").innerText = "👤 " + user.email;
     } else {
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     }
   }
 });
