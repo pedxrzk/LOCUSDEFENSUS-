@@ -16,15 +16,10 @@ body {
     margin: 0;
     height: 100vh;
     font-family: 'Segoe UI', Arial, sans-serif;
-
-    background:
-        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-        url("background.jpg");
-
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("background.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,24 +29,11 @@ body {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     padding: 35px 25px;
-    box-sizing: border-box;
     border-radius: 20px;
     width: 90%;
     max-width: 400px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     text-align: center;
-    animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .logo {
@@ -79,7 +61,6 @@ input {
     border-radius: 10px;
     border: none;
     outline: none;
-    box-sizing: border-box;
     font-size: 15px;
     background: rgba(255,255,255,0.9);
     transition: all 0.3s ease;
@@ -88,7 +69,6 @@ input {
 input:focus {
     background: white;
     box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
-    transform: translateY(-2px);
 }
 
 button {
@@ -108,16 +88,10 @@ button {
 button:hover {
     background: #1e4a76;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-button:active {
-    transform: translateY(0);
 }
 
 .google-btn {
     background: #db4437;
-    margin-top: 10px;
 }
 
 .google-btn:hover {
@@ -129,7 +103,6 @@ button:active {
     color: #e0e0e0;
     cursor: pointer;
     font-size: 14px;
-    transition: color 0.3s;
 }
 
 .link:hover {
@@ -147,7 +120,6 @@ button:active {
     border-radius: 8px;
 }
 
-/* Loading state */
 .loading {
     display: inline-block;
     width: 20px;
@@ -166,7 +138,6 @@ button:active {
 button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-    transform: none;
 }
 </style>
 </head>
@@ -212,7 +183,6 @@ button:disabled {
         onAuthStateChanged
     } from "firebase/auth";
 
-    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
         authDomain: "coleta-7fecd.firebaseapp.com",
@@ -229,17 +199,20 @@ button:disabled {
 
     let modo = "login";
     let isLoading = false;
+    let redirecting = false;
 
-    // 🔥 IMPORTANTE: Verificar se usuário já está logado
+    // ⚠️ IMPORTANTE: Só redireciona se NÃO estiver na página de dashboard
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            console.log("Usuário já está logado:", user.email);
-            // Se já estiver logado, redireciona para dashboard
-            window.location.replace("dashboard.html");
+        if (user && !redirecting) {
+            // Verifica se já não está na dashboard
+            if (!window.location.pathname.includes("dashboard.html")) {
+                redirecting = true;
+                console.log("Usuário logado, redirecionando para dashboard...");
+                window.location.href = "dashboard.html";
+            }
         }
     });
 
-    // Desabilitar botão durante loading
     function setLoading(button, loading) {
         if (loading) {
             button.disabled = true;
@@ -255,7 +228,6 @@ button:disabled {
         isLoading = loading;
     }
 
-    // TROCAR MODO
     window.trocarModo = function () {
         if (isLoading) return;
         
@@ -279,7 +251,6 @@ button:disabled {
         }
     };
 
-    // LOGIN / CADASTRO
     window.acao = function () {
         if (isLoading) return;
         
@@ -306,13 +277,11 @@ button:disabled {
             setLoading(botao, true);
             
             createUserWithEmailAndPassword(auth, email, senha)
-                .then((userCredential) => {
+                .then(() => {
                     setLoading(botao, false);
-                    alert("Conta criada com sucesso! 🚀\nAgora faça login para continuar.");
-                    // Limpar campos
+                    alert("Conta criada com sucesso! 🚀\nAgora faça login.");
                     document.getElementById("email").value = "";
                     document.getElementById("senha").value = "";
-                    // Voltar para modo login
                     if (modo === "cadastro") {
                         trocarModo();
                     }
@@ -321,11 +290,9 @@ button:disabled {
                     setLoading(botao, false);
                     erro.innerText = traduzirErro(error.code);
                     erro.style.display = "block";
-                    console.error("Erro no cadastro:", error.code);
                 });
 
         } else {
-            // Modo LOGIN
             setLoading(botao, true);
             
             setPersistence(auth, browserLocalPersistence)
@@ -334,19 +301,16 @@ button:disabled {
                 })
                 .then(() => {
                     // Login bem sucedido - o onAuthStateChanged vai redirecionar
-                    console.log("Login realizado com sucesso!");
-                    // Não precisa redirecionar aqui, o onAuthStateChanged cuida disso
+                    console.log("Login realizado!");
                 })
                 .catch((error) => {
                     setLoading(botao, false);
                     erro.innerText = traduzirErro(error.code);
                     erro.style.display = "block";
-                    console.error("Erro no login:", error.code);
                 });
         }
     };
 
-    // ESQUECI SENHA
     window.esqueciSenha = function () {
         if (isLoading) return;
         
@@ -363,16 +327,14 @@ button:disabled {
 
         sendPasswordResetEmail(auth, email)
             .then(() => {
-                alert("📧 Email de recuperação enviado!\nVerifique sua caixa de entrada.");
+                alert("📧 Email de recuperação enviado!");
             })
             .catch((error) => {
                 erro.innerText = traduzirErro(error.code);
                 erro.style.display = "block";
-                console.error("Erro ao enviar recuperação:", error.code);
             });
     };
 
-    // GOOGLE LOGIN
     window.loginGoogle = function () {
         if (isLoading) return;
         
@@ -384,17 +346,14 @@ button:disabled {
                 return signInWithPopup(auth, provider);
             })
             .then(() => {
-                console.log("Login com Google realizado com sucesso!");
-                // O onAuthStateChanged vai redirecionar
+                console.log("Login Google realizado!");
             })
             .catch((error) => {
                 erro.innerText = traduzirErroGoogle(error.code);
                 erro.style.display = "block";
-                console.error("Erro no login Google:", error.code);
             });
     };
 
-    // TRADUÇÃO DE ERROS
     function traduzirErro(code) {
         const erros = {
             "auth/email-already-in-use": "Este email já está cadastrado",
@@ -418,18 +377,10 @@ button:disabled {
         return traduzirErro(code);
     }
 
-    // Permitir enviar com Enter
     document.getElementById("senha").addEventListener("keypress", function(e) {
         if (e.key === "Enter") {
             e.preventDefault();
             acao();
-        }
-    });
-    
-    document.getElementById("email").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            document.getElementById("senha").focus();
         }
     });
 </script>
