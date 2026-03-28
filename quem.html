@@ -9,13 +9,120 @@
 
 <body>
 
-<div class="app">
+<!-- LOADING -->
+<div class="loading" id="loading" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 20px;">
+    <div class="spinner" style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p>Carregando...</p>
+</div>
+
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Estilos específicos para página Quem Somos */
+    .about-box {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 20px 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    
+    .about-box h1 {
+        color: #667eea;
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+    
+    .about-box p {
+        color: #555;
+        font-size: 16px;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .team {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        padding: 20px 30px 30px 30px;
+    }
+    
+    .team-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .avatar {
+        font-size: 64px;
+        margin-bottom: 15px;
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px auto;
+        background: #f0f0f0;
+    }
+    
+    .team-card h3 {
+        color: #333;
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+    
+    .team-card span {
+        color: #667eea;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+        .about-box {
+            margin: 20px;
+            padding: 20px;
+        }
+        
+        .about-box h1 {
+            font-size: 24px;
+        }
+        
+        .team {
+            padding: 20px;
+            gap: 15px;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 48px;
+        }
+    }
+</style>
+
+<div class="app" style="display: none;" id="app">
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-
         <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Logo" class="logo">
+            <img src="logo.sidebar.png" alt="Logo" class="logo" onerror="this.style.display='none'">
         </div>
 
         <a href="dashboard.html">Dashboard</a>
@@ -24,7 +131,7 @@
         <a href="quem.html" class="active">Quem Somos</a>
         <a href="sobre.html">Sobre</a>
 
-        <button class="btn btn-danger mt-20" onclick="logout()">
+        <button class="btn btn-danger mt-20" id="logoutBtn">
             Sair
         </button>
     </div>
@@ -42,99 +149,143 @@
         </div>
 
         <div class="about-box">
-            <h1>Locus Defensus</h1>
+            <h1>🚀 Locus Defensus</h1>
             <p>
-                Somos uma equipe focada no desenvolvimento de soluções inteligentes de monitoramento,
-                utilizando sensores e tecnologia IoT com ESP32 para coleta e análise de dados em tempo real.
+                Somos uma equipe apaixonada por tecnologia e inovação, focada no desenvolvimento de soluções inteligentes de monitoramento. 
+                Utilizamos sensores de última geração e tecnologia IoT com ESP32 para coleta e análise de dados em tempo real, 
+                proporcionando segurança e eficiência para nossos clientes.
+            </p>
+            <br>
+            <p>
+                <strong>Missão:</strong> Oferecer soluções de monitoramento acessíveis e de alta qualidade.<br>
+                <strong>Visão:</strong> Ser referência em IoT e automação no mercado brasileiro.<br>
+                <strong>Valores:</strong> Inovação, comprometimento e excelência.
             </p>
         </div>
 
         <div class="team">
-
             <div class="team-card">
                 <div class="avatar">👨‍💻</div>
                 <h3>Pedro Paulo</h3>
-                <span>Frontend & UI</span>
+                <span>Frontend & UI Designer</span>
+                <p style="margin-top: 10px; font-size: 12px; color: #888;">Responsável pela interface e experiência do usuário</p>
             </div>
 
             <div class="team-card">
                 <div class="avatar">🧪</div>
                 <h3>Yasmin</h3>
                 <span>Testes & Validação</span>
+                <p style="margin-top: 10px; font-size: 12px; color: #888;">Garante a qualidade e funcionamento do sistema</p>
             </div>
 
             <div class="team-card">
                 <div class="avatar">📄</div>
                 <h3>Kelen</h3>
                 <span>Documentação</span>
+                <p style="margin-top: 10px; font-size: 12px; color: #888;">Responsável pela documentação técnica e manuais</p>
             </div>
 
+            <div class="team-card">
+                <div class="avatar">⚙️</div>
+                <h3>Equipe IoT</h3>
+                <span>Hardware & ESP32</span>
+                <p style="margin-top: 10px; font-size: 12px; color: #888;">Desenvolvimento e integração dos sensores</p>
+            </div>
         </div>
 
     </div>
 
 </div>
 
-<!-- MENU -->
-<script>
-function toggleMenu() {
-    document.querySelector(".sidebar").classList.toggle("active");
-    document.querySelector(".overlay").classList.toggle("active");
-}
-
-document.querySelectorAll(".sidebar a").forEach(link => {
-    link.addEventListener("click", () => {
-        document.querySelector(".sidebar").classList.remove("active");
-        document.querySelector(".overlay").classList.remove("active");
-    });
-});
+<script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+        }
+    }
 </script>
 
-<!-- 🔥 FIREBASE CORRIGIDO -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { initializeApp } from "firebase/app";
+    import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
-const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "coleta-7fecd.firebaseapp.com",
-  projectId: "coleta-7fecd",
-  appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a"
-};
+    // Firebase Config - COMPLETA
+    const firebaseConfig = {
+        apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
+        authDomain: "coleta-7fecd.firebaseapp.com",
+        databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
+        projectId: "coleta-7fecd",
+        storageBucket: "coleta-7fecd.firebasestorage.app",
+        messagingSenderId: "130929270335",
+        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-// 🔥 ESCONDE TUDO
-document.body.style.display = "none";
+    const loadingEl = document.getElementById('loading');
+    const appEl = document.getElementById('app');
+    const userEl = document.getElementById('user');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-onAuthStateChanged(auth, (user) => {
+    // Função toggleMenu (global)
+    window.toggleMenu = function() {
+        const sidebar = document.querySelector(".sidebar");
+        const overlay = document.querySelector(".overlay");
+        if (sidebar && overlay) {
+            sidebar.classList.toggle("active");
+            overlay.classList.toggle("active");
+        }
+    };
 
-  if (user) {
-    document.body.style.display = "block";
+    // Fechar menu ao clicar nos links (mobile)
+    document.querySelectorAll(".sidebar a").forEach(link => {
+        link.addEventListener("click", () => {
+            const sidebar = document.querySelector(".sidebar");
+            const overlay = document.querySelector(".overlay");
+            if (window.innerWidth <= 768) {
+                if (sidebar) sidebar.classList.remove("active");
+                if (overlay) overlay.classList.remove("active");
+            }
+        });
+    });
 
-    const userElement = document.getElementById("user");
-    if (userElement) {
-      userElement.innerText = "👤 " + user.email;
+    // Logout
+    window.logout = async function() {
+        try {
+            await signOut(auth);
+            window.location.href = "index.html";
+        } catch (error) {
+            console.error("Erro ao sair:", error);
+            alert("Erro ao sair. Tente novamente.");
+        }
+    };
+
+    if (logoutBtn) {
+        logoutBtn.onclick = window.logout;
     }
 
-  } else {
-    setTimeout(() => {
-      if (!auth.currentUser) {
-        window.location.href = "index.html";
-      }
-    }, 800);
-  }
-
-});
-
-// logout
-window.logout = function() {
-  signOut(auth).then(() => {
-    window.location.href = "index.html";
-  });
-};
+    // ✅ VERIFICAÇÃO DE AUTENTICAÇÃO
+    onAuthStateChanged(auth, (user) => {
+        console.log("Quem Somos - Auth:", user ? user.email : "Não logado");
+        
+        if (user) {
+            // Usuário logado - mostra a página
+            if (userEl) {
+                userEl.innerText = "👤 " + user.email;
+            }
+            
+            // Esconde loading e mostra app
+            if (loadingEl) loadingEl.style.display = "none";
+            if (appEl) appEl.style.display = "block";
+            
+        } else {
+            // Usuário NÃO logado - redireciona para login
+            console.log("Usuário não autenticado, redirecionando para login...");
+            window.location.replace("index.html");
+        }
+    });
 </script>
 
 </body>
