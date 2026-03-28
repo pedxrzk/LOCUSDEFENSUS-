@@ -156,3 +156,32 @@ button {
     grid-template-columns: 1fr;
   }
 }
+/* DESKTOP */
+@media (min-width: 1024px) {
+  .sidebar {
+    position: relative;
+    left: 0;
+    height: auto;
+  }
+
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .logo {
+    width: 250px;
+  }
+}
+/* TABLET */
+@media (min-width: 768px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* DESKTOP GRANDE */
+@media (min-width: 1280px) {
+  .cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
