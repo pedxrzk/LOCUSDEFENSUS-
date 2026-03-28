@@ -31,18 +31,14 @@ body {
 
 /* LAYOUT */
 .app {
+  display: flex;
   min-height: 100vh;
-}
-
-@media (min-width: 769px) {
-  .app {
-    display: flex;
-  }
 }
 
 /* SIDEBAR */
 .sidebar {
   width: 260px;
+  flex-shrink: 0;
   background: var(--primary);
   color: white;
   padding: 20px;
@@ -73,13 +69,16 @@ body {
 }
 
 .logo {
-  max-width: 200px;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
 }
 
 /* MAIN */
 .main {
   flex: 1;
   padding: 20px;
+  min-width: 0;
 }
 
 /* TOPBAR */
@@ -98,10 +97,16 @@ body {
 }
 
 .card {
-  background: white;
+  background: var(--card-bg);
   padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  transition: 0.3s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
 }
 
 /* BOTÃO */
@@ -139,6 +144,10 @@ button {
 
 /* MOBILE */
 @media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+  }
+
   .sidebar {
     position: fixed;
     left: -260px;
@@ -152,30 +161,26 @@ button {
     left: 0;
   }
 
+  .main {
+    padding: 15px;
+  }
+
   .cards {
     grid-template-columns: 1fr;
   }
 }
-/* DESKTOP */
-@media (min-width: 1024px) {
-  .sidebar {
-    position: relative;
-    left: 0;
-    height: auto;
-  }
 
-  .cards {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .logo {
-    width: 250px;
-  }
-}
 /* TABLET */
-@media (min-width: 768px) {
+@media (min-width: 769px) and (max-width: 1023px) {
   .cards {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* DESKTOP */
+@media (min-width: 1024px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
