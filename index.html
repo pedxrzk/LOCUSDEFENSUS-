@@ -179,8 +179,7 @@ button:disabled {
         signInWithPopup,
         GoogleAuthProvider,
         setPersistence,
-        browserLocalPersistence,
-        onAuthStateChanged
+        browserLocalPersistence
     } from "firebase/auth";
 
     const firebaseConfig = {
@@ -199,19 +198,6 @@ button:disabled {
 
     let modo = "login";
     let isLoading = false;
-    let redirecting = false;
-
-    // ⚠️ IMPORTANTE: Só redireciona se NÃO estiver na página de dashboard
-    onAuthStateChanged(auth, (user) => {
-        if (user && !redirecting) {
-            // Verifica se já não está na dashboard
-            if (!window.location.pathname.includes("dashboard.html")) {
-                redirecting = true;
-                console.log("Usuário logado, redirecionando para dashboard...");
-                window.location.href = "dashboard.html";
-            }
-        }
-    });
 
     function setLoading(button, loading) {
         if (loading) {
@@ -300,8 +286,8 @@ button:disabled {
                     return signInWithEmailAndPassword(auth, email, senha);
                 })
                 .then(() => {
-                    // Login bem sucedido - o onAuthStateChanged vai redirecionar
-                    console.log("Login realizado!");
+                    // ✅ Login bem sucedido - redireciona para dashboard
+                    window.location.href = "dashboard.html";
                 })
                 .catch((error) => {
                     setLoading(botao, false);
@@ -346,7 +332,8 @@ button:disabled {
                 return signInWithPopup(auth, provider);
             })
             .then(() => {
-                console.log("Login Google realizado!");
+                // ✅ Login Google bem sucedido - redireciona para dashboard
+                window.location.href = "dashboard.html";
             })
             .catch((error) => {
                 erro.innerText = traduzirErroGoogle(error.code);
