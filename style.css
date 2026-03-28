@@ -1,12 +1,19 @@
 :root {
   --primary: #143458;
   --primary-light: #1b4a75;
+  --primary-dark: #0f2a45;
+
   --background: #f4f6fb;
   --card-bg: #ffffff;
+
   --text: #111827;
   --muted: #6b7280;
 
+  --danger: #e11d48;
+  --danger-dark: #be123c;
+
   --radius: 12px;
+
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   --shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.12);
 }
@@ -44,13 +51,18 @@ body {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  transition: 0.3s;
 }
 
+/* LINKS */
 .sidebar a {
   color: white;
   text-decoration: none;
-  padding: 10px;
+  padding: 12px;
   border-radius: var(--radius);
+  margin-bottom: 8px;
+  display: block;
+  transition: 0.2s;
 }
 
 .sidebar a:hover,
@@ -62,16 +74,33 @@ body {
 .logo-card {
   border-radius: 20px;
   padding: 20px;
-  margin-bottom: 20px;
-  background: linear-gradient(135deg, #1b1f5e, #2e367d);
+  margin-bottom: 25px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .logo {
   width: 100%;
-  max-width: 220px;
+  max-width: 200px;
   height: auto;
+}
+
+/* BOTÃO SAIR */
+.btn-danger {
+  margin-top: auto;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--danger);
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-danger:hover {
+  background: var(--danger-dark);
 }
 
 /* MAIN */
@@ -83,10 +112,26 @@ body {
 
 /* TOPBAR */
 .topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
   background: white;
   padding: 16px;
   border-radius: var(--radius);
   margin-bottom: 20px;
+
+  box-shadow: var(--shadow);
+}
+
+/* MENU BUTTON (hamburguer) */
+.menu-btn {
+  font-size: 22px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  display: none;
 }
 
 /* CARDS */
@@ -106,10 +151,10 @@ body {
 
 .card:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-3px);
+  transform: translateY(-4px);
 }
 
-/* BOTÃO */
+/* BOTÃO PADRÃO */
 button {
   padding: 10px;
   border: none;
@@ -117,19 +162,11 @@ button {
   background: var(--primary);
   color: white;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-.btn-danger {
-  background: #e11d48;
-}
-
-/* MENU */
-.menu-btn {
-  font-size: 22px;
-  background: none;
-  border: none;
-  color: var(--primary); /* ou white se estiver em fundo escuro */
-  cursor: pointer;
+button:hover {
+  background: var(--primary-light);
 }
 
 /* OVERLAY */
@@ -138,6 +175,7 @@ button {
   inset: 0;
   background: rgba(0,0,0,0.4);
   display: none;
+  z-index: 998;
 }
 
 .overlay.active {
@@ -146,6 +184,10 @@ button {
 
 /* MOBILE */
 @media (max-width: 768px) {
+  .menu-btn {
+    display: block; /* AGORA APARECE */
+  }
+
   .app {
     flex-direction: column;
   }
@@ -155,7 +197,6 @@ button {
     left: -260px;
     top: 0;
     height: 100%;
-    transition: 0.3s;
     z-index: 999;
   }
 
