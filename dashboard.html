@@ -9,14 +9,41 @@
 
 <body>
 
-<!-- LOADING -->
-<div class="loading" id="loading">
-    <div class="spinner"></div>
+<div class="loading" id="loading" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 20px;">
+    <div class="spinner" style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
     <p>Carregando dashboard...</p>
 </div>
 
-<!-- APP -->
-<div class="app" id="app" style="display: none;">
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+</style>
+
+<div class="app" style="display: none;" id="app">
 
     <!-- SIDEBAR -->
     <div class="sidebar">
@@ -48,6 +75,7 @@
         </div>
 
         <div class="cards">
+
             <div class="card">
                 <h3>🌡️ Temperatura</h3>
                 <p>25.7°C</p>
@@ -72,90 +100,108 @@
                 <h3>💡 LED</h3>
                 <p>Ligado</p>
             </div>
+
         </div>
 
     </div>
+
 </div>
 
-<!-- SPINNER STYLE -->
-<style>
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading {
-    position: fixed;
-    inset: 0;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    z-index: 9999;
-    gap: 20px;
-}
-
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-</style>
-
-<!-- FIREBASE -->
 <script type="importmap">
-{
-  "imports": {
-    "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-    "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-  }
-}
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+        }
+    }
 </script>
 
 <script type="module">
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+    import { initializeApp } from "firebase/app";
+    import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
-const firebaseConfig = {
-    apiKey: "SUA_KEY",
-    authDomain: "SEU_DOMINIO",
-    projectId: "SEU_ID",
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
+        authDomain: "coleta-7fecd.firebaseapp.com",
+        databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
+        projectId: "coleta-7fecd",
+        storageBucket: "coleta-7fecd.firebasestorage.app",
+        messagingSenderId: "130929270335",
+        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-const loadingEl = document.getElementById('loading');
-const appEl = document.getElementById('app');
-const userEl = document.getElementById('user');
-const logoutBtn = document.getElementById('logoutBtn');
+    const loadingEl = document.getElementById('loading');
+    const appEl = document.getElementById('app');
+    const userEl = document.getElementById('user');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-// MENU
-window.toggleMenu = function() {
-    document.querySelector(".sidebar").classList.toggle("active");
-    document.querySelector(".overlay").classList.toggle("active");
-};
+    // ✅ Função toggleMenu (global para funcionar no onclick)
+    window.toggleMenu = function() {
+        const sidebar = document.querySelector(".sidebar");
+        const overlay = document.querySelector(".overlay");
+        if (sidebar && overlay) {
+            sidebar.classList.toggle("active");
+            overlay.classList.toggle("active");
+        }
+    };
 
-// LOGOUT
-logoutBtn.onclick = async () => {
-    await signOut(auth);
-    window.location.href = "index.html";
-};
+    // Fechar menu ao clicar nos links (mobile)
+    document.querySelectorAll(".sidebar a").forEach(link => {
+        link.addEventListener("click", () => {
+            const sidebar = document.querySelector(".sidebar");
+            const overlay = document.querySelector(".overlay");
+            if (window.innerWidth <= 768) {
+                if (sidebar) sidebar.classList.remove("active");
+                if (overlay) overlay.classList.remove("active");
+            }
+        });
+    });
 
-// AUTH
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        userEl.innerText = "👤 " + user.email;
-        loadingEl.style.display = "none";
-        appEl.style.display = "block";
-    } else {
-        window.location.replace("index.html");
+    // ✅ Logout
+    window.logout = async function() {
+        try {
+            await signOut(auth);
+            window.location.href = "index.html";
+        } catch (error) {
+            console.error("Erro ao sair:", error);
+            alert("Erro ao sair. Tente novamente.");
+        }
+    };
+
+    // Conectar o botão de logout se existir
+    if (logoutBtn) {
+        logoutBtn.onclick = window.logout;
     }
-});
+
+    // ✅ VERIFICAÇÃO DE AUTENTICAÇÃO SIMPLES E CORRETA
+    let authChecked = false;
+
+    onAuthStateChanged(auth, (user) => {
+        console.log("Dashboard - Auth:", user ? user.email : "Não logado");
+        
+        if (user) {
+            // Usuário logado - mostra o dashboard
+            authChecked = true;
+            
+            if (userEl) {
+                userEl.innerText = "👤 " + user.email;
+            }
+            
+            // Esconde loading e mostra app
+            if (loadingEl) loadingEl.style.display = "none";
+            if (appEl) appEl.style.display = "block";
+            
+        } else {
+            // Usuário NÃO logado - redireciona para login
+            if (!authChecked) {
+                console.log("Redirecionando para login...");
+                window.location.replace("index.html");
+            }
+        }
+    });
 </script>
 
 </body>
