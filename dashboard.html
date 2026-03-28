@@ -1,208 +1,221 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html><html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
-<link rel="stylesheet" href="style.css">
-</head>
+<title>Dashboard</title><!-- FIREBASE IMPORT --><script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+  }
+}
+</script><style>
+:root {
+    --primary: #1b1f5e;
+    --primary-light: #2e367d;
+    --background: #f4f6fb;
+    --card-bg: #ffffff;
+    --text: #111827;
+}
 
-<body>
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
 
-<div class="loading" id="loading" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 20px;">
-    <div class="spinner" style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-    <p>Carregando dashboard...</p>
-</div>
+/* BASE */
+html, body {
+    overflow-x: hidden;
+}
 
-<style>
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+body {
+    background: var(--background);
+}
+
+/* LAYOUT */
+.app {
+    min-height: 100vh;
+}
+
+/* FLEX só desktop */
+@media (min-width: 769px) {
+    .app {
+        display: flex;
     }
-    .loading {
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    background: var(--primary);
+    color: white;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background: var(--primary-light);
+}
+
+/* MAIN */
+.main {
+    flex: 1;
+    background: white;
+    padding: 24px;
+}
+
+/* CARDS */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* MENU */
+.menu-btn {
+    font-size: 22px;
+    background: none;
+    border: none;
+}
+
+/* OVERLAY */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .sidebar {
         position: fixed;
         top: 0;
+        left: -260px;
+        height: 100%;
+        transition: 0.3s;
+        z-index: 999;
+    }
+
+    .sidebar.active {
         left: 0;
-        right: 0;
-        bottom: 0;
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        flex-direction: column;
-        gap: 20px;
     }
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid #667eea;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+
+    .cards {
+        grid-template-columns: 1fr;
     }
-</style>
+}
 
-<div class="app" style="display: none;" id="app">
+/* UTIL */
+.hidden {
+    display: none;
+}
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Logo" class="logo" onerror="this.style.display='none'">
-        </div>
-
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="controle.html">Controle</a>
-        <a href="historico.html">Histórico</a>
-        <a href="quem.html">Quem Somos</a>
-        <a href="sobre.html">Sobre</a>
-
-        <button class="btn btn-danger mt-20" id="logoutBtn">
-            Sair
-        </button>
-    </div>
-
-    <!-- OVERLAY -->
-    <div class="overlay" onclick="toggleMenu()"></div>
-
-    <!-- CONTEÚDO -->
-    <div class="main">
-
-        <div class="topbar">
-            <button class="menu-btn" onclick="toggleMenu()">☰</button>
-            <h2>Dashboard</h2>
-            <p id="user"></p>
-        </div>
-
-        <div class="cards">
-
-            <div class="card">
-                <h3>🌡️ Temperatura</h3>
-                <p>25.7°C</p>
-            </div>
-
-            <div class="card">
-                <h3>💧 Umidade</h3>
-                <p>55%</p>
-            </div>
-
-            <div class="card">
-                <h3>📊 Pressão</h3>
-                <p>Normal</p>
-            </div>
-
-            <div class="card">
-                <h3>🔊 Buzzer</h3>
-                <p>Desligado</p>
-            </div>
-
-            <div class="card">
-                <h3>💡 LED</h3>
-                <p>Ligado</p>
-            </div>
-
-        </div>
-
-    </div>
-
+/* LOADING */
+.loading {
+    position: fixed;
+    inset: 0;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9999;
+}
+</style></head><body><!-- LOADING --><div class="loading" id="loading">
+    <div style="width:50px;height:50px;border:5px solid #eee;border-top:5px solid #667eea;border-radius:50%;animation:spin 1s linear infinite;"></div>
+    <p>Carregando...</p>
+</div><!-- APP --><div class="app hidden" id="app"><!-- SIDEBAR -->
+<div class="sidebar">
+    <a href="#" class="active">Dashboard</a>
+    <a href="#">Controle</a>
+    <a href="#">Histórico</a>
+    <button id="logoutBtn">Sair</button>
 </div>
 
-<script type="importmap">
-    {
-        "imports": {
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-        }
+<!-- OVERLAY -->
+<div class="overlay" onclick="toggleMenu()"></div>
+
+<!-- MAIN -->
+<div class="main">
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <h2>Dashboard</h2>
+    <p id="user"></p>
+
+    <div class="cards">
+        <div class="card"><h3>🌡️ Temperatura</h3><p>25°C</p></div>
+        <div class="card"><h3>💧 Umidade</h3><p>55%</p></div>
+        <div class="card"><h3>📊 Pressão</h3><p>Normal</p></div>
+    </div>
+</div>
+
+</div><script type="module">
+import { initializeApp } from "firebase/app";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+
+/* 🔥 COLE SEU FIREBASE AQUI */
+const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_DOMINIO",
+    projectId: "SEU_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const loading = document.getElementById("loading");
+const appEl = document.getElementById("app");
+const userEl = document.getElementById("user");
+const logoutBtn = document.getElementById("logoutBtn");
+
+/* MENU */
+window.toggleMenu = function() {
+    document.querySelector(".sidebar").classList.toggle("active");
+    document.querySelector(".overlay").classList.toggle("active");
+};
+
+/* LOGOUT */
+logoutBtn.onclick = async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+};
+
+/* AUTH */
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        userEl.innerText = "👤 " + user.email;
+
+        loading.style.display = "none";
+        appEl.classList.remove("hidden");
+
+    } else {
+        window.location.replace("index.html");
     }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
-        authDomain: "coleta-7fecd.firebaseapp.com",
-        databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
-        projectId: "coleta-7fecd",
-        storageBucket: "coleta-7fecd.firebasestorage.app",
-        messagingSenderId: "130929270335",
-        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const loadingEl = document.getElementById('loading');
-    const appEl = document.getElementById('app');
-    const userEl = document.getElementById('user');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    // ✅ Função toggleMenu (global para funcionar no onclick)
-    window.toggleMenu = function() {
-        const sidebar = document.querySelector(".sidebar");
-        const overlay = document.querySelector(".overlay");
-        if (sidebar && overlay) {
-            sidebar.classList.toggle("active");
-            overlay.classList.toggle("active");
-        }
-    };
-
-    // Fechar menu ao clicar nos links (mobile)
-    document.querySelectorAll(".sidebar a").forEach(link => {
-        link.addEventListener("click", () => {
-            const sidebar = document.querySelector(".sidebar");
-            const overlay = document.querySelector(".overlay");
-            if (window.innerWidth <= 768) {
-                if (sidebar) sidebar.classList.remove("active");
-                if (overlay) overlay.classList.remove("active");
-            }
-        });
-    });
-
-    // ✅ Logout
-    window.logout = async function() {
-        try {
-            await signOut(auth);
-            window.location.href = "index.html";
-        } catch (error) {
-            console.error("Erro ao sair:", error);
-            alert("Erro ao sair. Tente novamente.");
-        }
-    };
-
-    // Conectar o botão de logout se existir
-    if (logoutBtn) {
-        logoutBtn.onclick = window.logout;
-    }
-
-    // ✅ VERIFICAÇÃO DE AUTENTICAÇÃO SIMPLES E CORRETA
-    let authChecked = false;
-
-    onAuthStateChanged(auth, (user) => {
-        console.log("Dashboard - Auth:", user ? user.email : "Não logado");
-        
-        if (user) {
-            // Usuário logado - mostra o dashboard
-            authChecked = true;
-            
-            if (userEl) {
-                userEl.innerText = "👤 " + user.email;
-            }
-            
-            // Esconde loading e mostra app
-            if (loadingEl) loadingEl.style.display = "none";
-            if (appEl) appEl.style.display = "block";
-            
-        } else {
-            // Usuário NÃO logado - redireciona para login
-            if (!authChecked) {
-                console.log("Redirecionando para login...");
-                window.location.replace("index.html");
-            }
-        }
-    });
-</script>
-
-</body>
+});
+</script><style>
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style></body>
 </html>
