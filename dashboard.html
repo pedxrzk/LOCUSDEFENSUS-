@@ -6,6 +6,7 @@
 <title>Dashboard - Sistema de Monitoramento</title>
 
 <style>
+    /* MANTENHA O MESMO CSS DO SEU DASHBOARD ANTERIOR */
     * {
         margin: 0;
         padding: 0;
@@ -23,7 +24,6 @@
         min-height: 100vh;
     }
 
-    /* SIDEBAR */
     .sidebar {
         width: 260px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -36,7 +36,6 @@
         transition: transform 0.3s ease;
         z-index: 1000;
         overflow-y: auto;
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     }
 
     .logo-card {
@@ -79,7 +78,6 @@
         border-left: 4px solid #ffd700;
     }
 
-    /* OVERLAY */
     .overlay {
         display: none;
         position: fixed;
@@ -95,7 +93,6 @@
         display: block;
     }
 
-    /* MAIN CONTENT */
     .main {
         flex: 1;
         margin-left: 260px;
@@ -122,7 +119,6 @@
         cursor: pointer;
         padding: 5px 10px;
         border-radius: 5px;
-        transition: background 0.3s;
     }
 
     .menu-btn:hover {
@@ -143,7 +139,6 @@
         font-weight: 500;
     }
 
-    /* CARDS */
     .cards {
         padding: 30px;
         display: grid;
@@ -156,29 +151,23 @@
         border-radius: 15px;
         padding: 25px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        transition: transform 0.3s, box-shadow 0.3s;
-        cursor: pointer;
+        transition: transform 0.3s;
     }
 
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
 
     .card h3 {
         color: #667eea;
         font-size: 18px;
         margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
     }
 
     .card p {
         font-size: 32px;
         font-weight: bold;
         color: #333;
-        margin: 0;
     }
 
     .btn {
@@ -200,15 +189,12 @@
 
     .btn-danger:hover {
         background: #c82333;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(220,53,69,0.3);
     }
 
     .mt-20 {
         margin-top: 20px;
     }
 
-    /* LOADING */
     .loading {
         position: fixed;
         top: 0;
@@ -238,7 +224,6 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* RESPONSIVE */
     @media (max-width: 768px) {
         .sidebar {
             transform: translateX(-100%);
@@ -260,10 +245,6 @@
             padding: 20px;
             grid-template-columns: 1fr;
         }
-
-        .card p {
-            font-size: 24px;
-        }
     }
 </style>
 </head>
@@ -277,7 +258,6 @@
 
 <div class="app" style="display: none;" id="app">
 
-    <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
         <div class="logo-card">
             <div class="logo">📊</div>
@@ -295,10 +275,8 @@
         </button>
     </div>
 
-    <!-- OVERLAY -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- CONTEÚDO -->
     <div class="main">
         <div class="topbar">
             <button class="menu-btn" id="menuBtn">☰</button>
@@ -349,21 +327,19 @@
     import { initializeApp } from "firebase/app";
     import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
-    // Firebase Config - ATUALIZE COM SUAS CREDENCIAIS COMPLETAS
     const firebaseConfig = {
-        apiKey: "AIzaSyB3yQ8xKjLmNpQrStUvWxYz1234567890", // ⚠️ SUBSTITUA PELA SUA API KEY COMPLETA
+        apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
         authDomain: "coleta-7fecd.firebaseapp.com",
+        databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
         projectId: "coleta-7fecd",
-        storageBucket: "coleta-7fecd.appspot.com",
+        storageBucket: "coleta-7fecd.firebasestorage.app",
         messagingSenderId: "130929270335",
-        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a"
+        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
     };
 
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Elementos DOM
     const loadingEl = document.getElementById('loading');
     const appEl = document.getElementById('app');
     const userEl = document.getElementById('user');
@@ -372,17 +348,14 @@
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
 
-    // Função para mostrar/ocultar menu mobile
     function toggleMenu() {
         sidebar.classList.toggle('active');
         overlay.classList.toggle('active');
     }
 
-    // Função de logout
     async function handleLogout() {
         try {
             await signOut(auth);
-            // Redirecionar para login
             window.location.href = "index.html";
         } catch (error) {
             console.error("Erro ao fazer logout:", error);
@@ -390,12 +363,10 @@
         }
     }
 
-    // Event Listeners
     if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
     if (overlay) overlay.addEventListener('click', toggleMenu);
     if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 
-    // Fechar sidebar ao clicar em links (mobile)
     document.querySelectorAll('.sidebar a').forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth <= 768) {
@@ -404,41 +375,26 @@
         });
     });
 
-    // Monitorar estado de autenticação
-    let authCheckComplete = false;
-
+    // ✅ CORREÇÃO: Verificação simples sem loops
     onAuthStateChanged(auth, (user) => {
-        console.log("Auth state changed:", user ? `Logado: ${user.email}` : "Não logado");
+        console.log("Dashboard - Auth state:", user ? user.email : "Não logado");
         
         if (user) {
-            // Usuário está logado - mostrar dashboard
-            authCheckComplete = true;
-            
-            // Atualizar email do usuário
+            // Usuário logado - mostra o dashboard
             if (userEl) {
                 userEl.textContent = `👤 ${user.email}`;
             }
             
-            // Esconder loading e mostrar app
+            // Esconde loading e mostra app
             if (loadingEl) loadingEl.style.display = 'none';
             if (appEl) appEl.style.display = 'flex';
             
         } else {
-            // Usuário NÃO está logado - redirecionar para login
-            if (!authCheckComplete) {
-                console.log("Usuário não autenticado, redirecionando para login...");
-                window.location.replace("index.html");
-            }
-        }
-    });
-
-    // Timeout de segurança - se após 3 segundos ainda estiver no loading, redirecionar
-    setTimeout(() => {
-        if (!auth.currentUser) {
-            console.log("Timeout: usuário não autenticado, redirecionando...");
+            // Usuário NÃO logado - redireciona para login
+            console.log("Usuário não autenticado, redirecionando...");
             window.location.replace("index.html");
         }
-    }, 3000);
+    });
 </script>
 
 </body>
