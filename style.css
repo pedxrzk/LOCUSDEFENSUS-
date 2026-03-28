@@ -84,7 +84,6 @@ body {
 .logo {
   width: 100%;
   max-width: 200px;
-  height: auto;
 }
 
 /* BOTÃO SAIR */
@@ -110,11 +109,11 @@ body {
   min-width: 0;
 }
 
-/* TOPBAR */
+/* 🔥 TOPBAR CORRIGIDA */
 .topbar {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column; /* ESSENCIAL */
+  align-items: flex-start;
 
   background: white;
   padding: 16px;
@@ -124,7 +123,23 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* MENU BUTTON (hamburguer) */
+/* TÍTULO */
+.topbar h2 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+/* EMAIL DO USUÁRIO */
+.user-email {
+  font-size: 13px;
+  color: var(--muted);
+
+  /* 🔥 ISSO RESOLVE O BUG */
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* MENU BUTTON */
 .menu-btn {
   font-size: 22px;
   background: none;
@@ -154,7 +169,7 @@ body {
   transform: translateY(-4px);
 }
 
-/* BOTÃO PADRÃO */
+/* BOTÃO */
 button {
   padding: 10px;
   border: none;
@@ -185,11 +200,7 @@ button:hover {
 /* MOBILE */
 @media (max-width: 768px) {
   .menu-btn {
-    display: block; /* AGORA APARECE */
-  }
-
-  .app {
-    flex-direction: column;
+    display: block;
   }
 
   .sidebar {
