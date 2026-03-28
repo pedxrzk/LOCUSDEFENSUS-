@@ -2,184 +2,436 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Sistema de Monitoramento</title>
 
 <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     height: 100vh;
-    font-family: Arial;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    font-family: 'Segoe UI', Arial, sans-serif;
+
+    background:
+        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+        url("background.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.box {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(12px);
-    padding: 25px;
-    border-radius: 15px;
+.login-box {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 35px 25px;
+    box-sizing: border-box;
+    border-radius: 20px;
     width: 90%;
-    max-width: 350px;
+    max-width: 400px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    background: white;
+    padding: 10px;
+}
+
+h2 {
     color: white;
+    font-size: 20px;
+    margin-bottom: 25px;
+    font-weight: 500;
 }
 
 input {
     width: 100%;
-    padding: 12px;
+    padding: 14px 15px;
     margin: 10px 0;
     border-radius: 10px;
     border: none;
     outline: none;
+    box-sizing: border-box;
+    font-size: 15px;
+    background: rgba(255,255,255,0.9);
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    background: white;
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
+    transform: translateY(-2px);
 }
 
 button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
+    background: #143458;
+    color: white;
     border: none;
     border-radius: 10px;
-    background: #00c6ff;
-    color: white;
-    font-weight: bold;
     cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: all 0.3s ease;
 }
 
-.google {
+button:hover {
+    background: #1e4a76;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.google-btn {
     background: #db4437;
     margin-top: 10px;
 }
 
+.google-btn:hover {
+    background: #c5392c;
+}
+
 .link {
-    margin-top: 10px;
+    margin-top: 15px;
+    color: #e0e0e0;
     cursor: pointer;
-    color: #ddd;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.link:hover {
+    color: white;
+    text-decoration: underline;
 }
 
 .error {
     color: #ff6b6b;
+    margin-top: 15px;
     display: none;
+    font-size: 14px;
+    background: rgba(0,0,0,0.5);
+    padding: 8px;
+    border-radius: 8px;
+}
+
+/* Loading state */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.6s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="login-box">
+    <img src="logo.png" class="logo" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=Logo'">
+    <h2 id="titulo">Acesse o sistema de monitoramento remoto</h2>
 
-<h2 id="titulo">Login</h2>
+    <input type="email" id="email" placeholder="Email" autocomplete="email">
+    <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="senha" placeholder="Senha">
+    <button id="btnPrincipal" onclick="acao()">Entrar</button>
+    <button class="google-btn" onclick="loginGoogle()">Entrar com Google</button>
 
-<button onclick="acao()">Entrar</button>
-<button class="google" onclick="loginGoogle()">Entrar com Google</button>
+    <p class="link" onclick="esqueciSenha()">Esqueci minha senha</p>
+    <p class="link" id="toggleLink" onclick="trocarModo()">Não tem conta? Cadastre-se</p>
 
-<p class="link" onclick="trocarModo()" id="toggle">Criar conta</p>
-<p class="link" onclick="reset()">Esqueci senha</p>
-
-<p class="error" id="erro"></p>
-
+    <p class="error" id="erro"></p>
 </div>
 
+<script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+        }
+    }
+</script>
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signInWithPopup,
-  GoogleAuthProvider,
-  setPersistence,
-  browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { initializeApp } from "firebase/app";
+    import {
+        getAuth,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+        sendPasswordResetEmail,
+        signInWithPopup,
+        GoogleAuthProvider,
+        setPersistence,
+        browserLocalPersistence,
+        onAuthStateChanged
+    } from "firebase/auth";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
-  authDomain: "coleta-7fecd.firebaseapp.com",
-  projectId: "coleta-7fecd",
-  appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-let modo = "login";
-
-// alternar modo
-window.trocarModo = () => {
-    modo = modo === "login" ? "cadastro" : "login";
-    document.getElementById("titulo").innerText =
-        modo === "login" ? "Login" : "Cadastro";
-    document.getElementById("toggle").innerText =
-        modo === "login" ? "Criar conta" : "Já tenho conta";
-};
-
-// login / cadastro
-window.acao = () => {
-    let email = emailInput.value;
-    let senha = senhaInput.value;
-    let erro = document.getElementById("erro");
-
-    erro.style.display = "none";
-
-    if (!email || !senha) {
-        erro.innerText = "Preencha tudo";
-        erro.style.display = "block";
-        return;
-    }
-
-    if (modo === "login") {
-        setPersistence(auth, browserLocalPersistence)
-        .then(() => signInWithEmailAndPassword(auth, email, senha))
-        .then(() => window.location.href = "dashboard.html")
-        .catch(e => mostrarErro(e.code));
-
-    } else {
-        createUserWithEmailAndPassword(auth, email, senha)
-        .then(() => alert("Conta criada!"))
-        .catch(e => mostrarErro(e.code));
-    }
-};
-
-// google
-window.loginGoogle = () => {
-    setPersistence(auth, browserLocalPersistence)
-    .then(() => signInWithPopup(auth, provider))
-    .then(() => window.location.href = "dashboard.html")
-    .catch(e => mostrarErro(e.message));
-};
-
-// reset senha
-window.reset = () => {
-    let email = emailInput.value;
-    if (!email) return alert("Digite o email");
-
-    sendPasswordResetEmail(auth, email)
-    .then(() => alert("Email enviado"))
-    .catch(e => mostrarErro(e.code));
-};
-
-// erros
-function mostrarErro(code) {
-    let erro = document.getElementById("erro");
-
-    const erros = {
-        "auth/user-not-found": "Usuário não encontrado",
-        "auth/wrong-password": "Senha errada",
-        "auth/email-already-in-use": "Email já usado"
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
+        authDomain: "coleta-7fecd.firebaseapp.com",
+        databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
+        projectId: "coleta-7fecd",
+        storageBucket: "coleta-7fecd.firebasestorage.app",
+        messagingSenderId: "130929270335",
+        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
     };
 
-    erro.innerText = erros[code] || code;
-    erro.style.display = "block";
-}
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-// inputs
-const emailInput = document.getElementById("email");
-const senhaInput = document.getElementById("senha");
+    let modo = "login";
+    let isLoading = false;
+
+    // 🔥 IMPORTANTE: Verificar se usuário já está logado
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log("Usuário já está logado:", user.email);
+            // Se já estiver logado, redireciona para dashboard
+            window.location.replace("dashboard.html");
+        }
+    });
+
+    // Desabilitar botão durante loading
+    function setLoading(button, loading) {
+        if (loading) {
+            button.disabled = true;
+            button.innerHTML = '<span class="loading"></span> Aguardando...';
+        } else {
+            button.disabled = false;
+            if (modo === "login") {
+                button.innerHTML = "Entrar";
+            } else {
+                button.innerHTML = "Cadastrar";
+            }
+        }
+        isLoading = loading;
+    }
+
+    // TROCAR MODO
+    window.trocarModo = function () {
+        if (isLoading) return;
+        
+        let titulo = document.getElementById("titulo");
+        let botao = document.getElementById("btnPrincipal");
+        let link = document.getElementById("toggleLink");
+        let erro = document.getElementById("erro");
+
+        erro.style.display = "none";
+
+        if (modo === "login") {
+            modo = "cadastro";
+            titulo.innerText = "Criar nova conta";
+            botao.innerHTML = "Cadastrar";
+            link.innerText = "Já tem conta? Entrar";
+        } else {
+            modo = "login";
+            titulo.innerText = "Acesse o sistema de monitoramento remoto";
+            botao.innerHTML = "Entrar";
+            link.innerText = "Não tem conta? Cadastre-se";
+        }
+    };
+
+    // LOGIN / CADASTRO
+    window.acao = function () {
+        if (isLoading) return;
+        
+        let email = document.getElementById("email").value.trim();
+        let senha = document.getElementById("senha").value;
+        let erro = document.getElementById("erro");
+        let botao = document.getElementById("btnPrincipal");
+
+        erro.style.display = "none";
+
+        if (!email || !senha) {
+            erro.innerText = "Preencha todos os campos";
+            erro.style.display = "block";
+            return;
+        }
+
+        if (modo === "cadastro") {
+            if (senha.length < 6) {
+                erro.innerText = "A senha deve ter no mínimo 6 caracteres";
+                erro.style.display = "block";
+                return;
+            }
+            
+            setLoading(botao, true);
+            
+            createUserWithEmailAndPassword(auth, email, senha)
+                .then((userCredential) => {
+                    setLoading(botao, false);
+                    alert("Conta criada com sucesso! 🚀\nAgora faça login para continuar.");
+                    // Limpar campos
+                    document.getElementById("email").value = "";
+                    document.getElementById("senha").value = "";
+                    // Voltar para modo login
+                    if (modo === "cadastro") {
+                        trocarModo();
+                    }
+                })
+                .catch((error) => {
+                    setLoading(botao, false);
+                    erro.innerText = traduzirErro(error.code);
+                    erro.style.display = "block";
+                    console.error("Erro no cadastro:", error.code);
+                });
+
+        } else {
+            // Modo LOGIN
+            setLoading(botao, true);
+            
+            setPersistence(auth, browserLocalPersistence)
+                .then(() => {
+                    return signInWithEmailAndPassword(auth, email, senha);
+                })
+                .then(() => {
+                    // Login bem sucedido - o onAuthStateChanged vai redirecionar
+                    console.log("Login realizado com sucesso!");
+                    // Não precisa redirecionar aqui, o onAuthStateChanged cuida disso
+                })
+                .catch((error) => {
+                    setLoading(botao, false);
+                    erro.innerText = traduzirErro(error.code);
+                    erro.style.display = "block";
+                    console.error("Erro no login:", error.code);
+                });
+        }
+    };
+
+    // ESQUECI SENHA
+    window.esqueciSenha = function () {
+        if (isLoading) return;
+        
+        let email = document.getElementById("email").value.trim();
+        let erro = document.getElementById("erro");
+
+        erro.style.display = "none";
+
+        if (!email) {
+            erro.innerText = "Digite seu email primeiro";
+            erro.style.display = "block";
+            return;
+        }
+
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                alert("📧 Email de recuperação enviado!\nVerifique sua caixa de entrada.");
+            })
+            .catch((error) => {
+                erro.innerText = traduzirErro(error.code);
+                erro.style.display = "block";
+                console.error("Erro ao enviar recuperação:", error.code);
+            });
+    };
+
+    // GOOGLE LOGIN
+    window.loginGoogle = function () {
+        if (isLoading) return;
+        
+        let erro = document.getElementById("erro");
+        erro.style.display = "none";
+        
+        setPersistence(auth, browserLocalPersistence)
+            .then(() => {
+                return signInWithPopup(auth, provider);
+            })
+            .then(() => {
+                console.log("Login com Google realizado com sucesso!");
+                // O onAuthStateChanged vai redirecionar
+            })
+            .catch((error) => {
+                erro.innerText = traduzirErroGoogle(error.code);
+                erro.style.display = "block";
+                console.error("Erro no login Google:", error.code);
+            });
+    };
+
+    // TRADUÇÃO DE ERROS
+    function traduzirErro(code) {
+        const erros = {
+            "auth/email-already-in-use": "Este email já está cadastrado",
+            "auth/invalid-email": "Email inválido",
+            "auth/weak-password": "Senha muito fraca (mínimo 6 caracteres)",
+            "auth/user-not-found": "Usuário não encontrado",
+            "auth/wrong-password": "Senha incorreta",
+            "auth/too-many-requests": "Muitas tentativas. Tente novamente mais tarde",
+            "auth/network-request-failed": "Erro de conexão. Verifique sua internet"
+        };
+        return erros[code] || "Erro: " + code;
+    }
+
+    function traduzirErroGoogle(code) {
+        if (code === "auth/popup-closed-by-user") {
+            return "Popup fechado antes de completar o login";
+        }
+        if (code === "auth/popup-blocked") {
+            return "Popup bloqueado pelo navegador. Permita popups para este site";
+        }
+        return traduzirErro(code);
+    }
+
+    // Permitir enviar com Enter
+    document.getElementById("senha").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            acao();
+        }
+    });
+    
+    document.getElementById("email").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            document.getElementById("senha").focus();
+        }
+    });
 </script>
 
 </body>
