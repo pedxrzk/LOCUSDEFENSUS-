@@ -17,13 +17,26 @@ body {
     height: 100vh;
     font-family: 'Segoe UI', Arial, sans-serif;
 
-    background: #143458; /* mesma cor da sidebar */
+    background: radial-gradient(circle at top left, #1b4a75, #143458);
 
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
+/* efeito de luz */
+body::before {
+    content: "";
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255,255,255,0.05);
+    filter: blur(100px);
+    top: -100px;
+    left: -100px;
+}
 .login-box {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
