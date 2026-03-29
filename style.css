@@ -10,13 +10,29 @@
   --shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+/* Reset total para eliminar espaços brancos */
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  font-family: 'Inter', sans-serif; 
+}
 
-body { background: var(--background); color: var(--text); overflow-x: hidden; }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--background);
+}
 
-.app { display: flex; min-height: 100vh; }
+.app { 
+  display: flex; 
+  min-height: 100vh; 
+  width: 100%;
+}
 
-/* Botão Menu Mobile */
+/* Botão Menu Mobile - Colado no topo */
 .menu-toggle {
   display: none;
   background: var(--primary);
@@ -28,6 +44,7 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   width: 100%;
   text-align: left;
   z-index: 1001;
+  border-radius: 0;
 }
 
 /* Sidebar */
@@ -43,11 +60,6 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   transition: all 0.3s ease;
 }
 
-.user-info-group {
-  margin-top: 25px; /* Espaço entre o último link e o login */
-  padding: 0 5px;
-}
-
 /* Card da Logo */
 .logo-card { 
   background: rgba(255, 255, 255, 0.1);
@@ -58,6 +70,7 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
 }
 .logo { width: 100%; max-width: 140px; display: block; margin: 0 auto; }
 
+/* Links */
 .sidebar a {
   color: white;
   text-decoration: none;
@@ -69,9 +82,17 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
 }
 .sidebar a:hover { background: var(--primary-light); }
 
-.sidebar-footer {
-  margin-top: auto; /* Empurra tudo para o fundo */
-  padding-bottom: 10px; /* Pequeno respiro do fim da tela */
+/* Bloco de Login abaixo dos links */
+.user-info-group {
+  margin-top: 20px;
+  padding: 0 5px;
+}
+
+#userSidebar {
+  font-size: 11px;
+  color: #ccc;
+  margin-bottom: 8px;
+  padding-left: 12px;
 }
 
 .divider {
@@ -81,15 +102,6 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   margin-bottom: 12px;
 }
 
-#userSidebar {
-  font-size: 11px;
-  color: #ccc;
-  margin-bottom: 8px;
-  text-align: left; /* Alinhado com os links */
-  padding-left: 12px;
-}
-
-/* Botão Sair */
 .btn-danger {
   background: var(--danger);
   color: white;
@@ -101,11 +113,7 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   font-weight: bold;
 }
 
-.btn-danger:hover {
-  filter: brightness(1.1);
-}
-
-/* Conteúdo */
+/* Conteúdo Principal */
 .main { flex: 1; padding: 30px; min-width: 0; }
 
 .topbar {
@@ -130,16 +138,23 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   border-left: 5px solid var(--primary-light);
 }
 
-/* Loading */
+.card h3 { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+.card p { font-size: 24px; font-weight: bold; color: var(--primary); }
+
+/* Loading Centralizado */
 .loading-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
   background: white; display: flex; flex-direction: column;
   align-items: center; justify-content: center; z-index: 9999;
 }
-.spinner-circular { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+.spinner-circular { 
+  width: 50px; height: 50px; border: 5px solid #f3f3f3; 
+  border-top: 5px solid var(--primary); border-radius: 50%; 
+  animation: spin 1s linear infinite; margin-bottom: 15px;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Mobile */
+/* Mobile (Gaveta Lateral) */
 @media (max-width: 768px) {
   .app { flex-direction: column; }
   .menu-toggle { display: block; }
@@ -147,13 +162,13 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   .sidebar {
     position: fixed;
     top: 0;
-    left: -270px; /* Escondido */
+    left: -270px; /* Escondido à esquerda */
     height: 100vh;
     z-index: 2000;
     box-shadow: 10px 0 20px rgba(0,0,0,0.3);
   }
 
-  .sidebar.active { left: 0; } /* Desliza para dentro */
+  .sidebar.active { left: 0; } /* Slide para dentro */
   
   .main { padding: 15px; }
   .cards { grid-template-columns: 1fr; }
