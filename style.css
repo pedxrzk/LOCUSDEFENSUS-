@@ -29,6 +29,20 @@ body {
   min-height: 100vh; 
 }
 
+/* Botão de Menu (Escondido por padrão no Desktop) */
+.menu-toggle {
+  display: none;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  border-bottom: 1px solid var(--primary-light);
+}
+
 /* Sidebar (Menu Lateral) */
 .sidebar {
   width: 260px;
@@ -37,7 +51,8 @@ body {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0; /* Garante que ela não "encolha" no desktop */
+  flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
 .logo-card { margin-bottom: 25px; text-align: center; }
@@ -48,7 +63,9 @@ body {
   text-decoration: none;
   padding: 12px;
   margin-bottom: 5px;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   border-radius: 8px;
   transition: 0.2s;
 }
@@ -63,14 +80,15 @@ body {
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
-  margin-top: auto; /* Joga o botão de sair para o fim do menu */
+  margin-top: auto;
 }
 
-/* Área de Conteúdo */
+/* Área de Conteúdo Principal */
 .main { 
   flex: 1; 
   padding: 30px; 
   width: 100%;
+  max-width: 100%;
 }
 
 .topbar {
@@ -81,10 +99,10 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* Grid de Cards */
+/* Grid de Cards Responsivo */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
 }
 
@@ -99,7 +117,37 @@ body {
 .card h3 { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
 .card p { font-size: 24px; font-weight: bold; color: var(--primary); }
 
-/* Feedback Visual */
+/* --- AJUSTES PARA MOBILE (TELAS PEQUENAS) --- */
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .menu-toggle {
+    display: block; /* Aparece apenas no celular */
+  }
+
+  .sidebar {
+    width: 100%;
+    display: none; /* Esconde o menu por padrão no celular */
+    padding: 15px;
+  }
+
+  /* Quando o JS adicionar a classe 'active', o menu aparece */
+  .sidebar.active {
+    display: flex;
+  }
+
+  .main {
+    padding: 15px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr; /* Um card por linha no mobile */
+  }
+}
+
+/* Spinner de Carregamento */
 .spinner-circular {
   width: 40px;
   height: 40px;
@@ -111,34 +159,3 @@ body {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* --- CORREÇÃO PARA MOBILE --- */
-@media (max-width: 768px) {
-  .app {
-    flex-direction: column; /* Menu em cima, conteúdo embaixo */
-  }
-
-  .sidebar {
-    width: 100%; /* Ocupa a largura toda no celular */
-    height: auto;
-    padding: 15px;
-  }
-
-  .logo-card {
-    margin-bottom: 15px;
-  }
-
-  /* Ajuste para os links não ocuparem muito espaço vertical no mobile */
-  .sidebar a {
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  .main {
-    padding: 15px; /* Reduz o respiro lateral no celular */
-  }
-
-  .cards {
-    grid-template-columns: 1fr; /* Um card por linha no celular */
-  }
-}
