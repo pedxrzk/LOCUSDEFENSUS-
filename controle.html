@@ -1,29 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Controle - Limno</title>
-<link rel="stylesheet" href="style.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Controle - Limno</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<!-- LOADING -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner-circular"></div>
-    <p id="loadingText">Carregando controle...</p>
+    <p id="loadingText">Carregando painel de controle...</p>
 </div>
 
-
-
-<!-- APP -->
 <div class="app" id="app" style="display: none;">
 
-    <!-- SIDEBAR -->
     <nav class="sidebar" id="sidebar">
         <div class="logo-card">
             <img src="logo.sidebar.png" alt="Limno Logo" class="logo" onerror="this.style.display='none'">
@@ -37,50 +32,42 @@
         <a href="sobre.html">ℹ️ Sobre</a>
 
         <div style="margin-top: 20px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-    <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 10px;" id="userSidebar">
-        usuario@email.com
-    </p>
-    <button class="btn-danger" id="logoutBtn" style="width: 100%;">
-        🚪 Sair
-    </button>
-</div>
-
+            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
+                carregando...
+            </p>
+            <button class="btn-danger" id="logoutBtn" style="width: 100%;">
+                🚪 Sair
+            </button>
+        </div>
     </nav>
 
-    <!-- OVERLAY -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- CONTEÚDO -->
     <main class="main">
 
-        <!-- TOPBAR -->
         <header class="topbar">
             <div style="flex: 1; min-width: 0;">
                 <h2>Painel de Comandos</h2>
-                <p class="user-email" id="userTopbar">usuario@email.com</p>
+                <p class="user-email" id="userTopbar">carregando...</p>
             </div>
-            <button class="menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
+            <button class="menu-btn" id="menuBtn">☰</button>
         </header>
 
-        <!-- CARDS -->
         <div class="cards">
-
             <article class="card">
                 <h3>🔊 Buzzer</h3>
-                <p>Teste o alarme sonoro do sistema</p>
+                <p>Teste o alarme sonoro do sistema em tempo real.</p>
                 <button onclick="testarBuzzer()" id="btnBuzzer">Testar</button>
             </article>
 
             <article class="card">
                 <h3>💡 LED</h3>
-                <p>Alternar estado do LED</p>
+                <p>Ligar ou desligar o indicador luminoso do dispositivo.</p>
                 <button onclick="alternarLED()" id="btnLED">Alternar</button>
             </article>
-
         </div>
 
     </main>
-
 </div>
 
 <script type="importmap">
@@ -96,7 +83,6 @@
     import { initializeApp } from "firebase/app";
     import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
 
-    // Configuração Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
         authDomain: "coleta-7fecd.firebaseapp.com",
@@ -109,12 +95,8 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    
-    // IMPORTANTE: Define persistência para manter login após fechar aba
-    await setPersistence(auth, browserLocalPersistence);
 
-    // Elementos
-    const loadingEl = document.getElementById('loading');
+    const loadingOverlay = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
     const userTopbar = document.getElementById('userTopbar');
     const userSidebar = document.getElementById('userSidebar');
@@ -122,130 +104,72 @@
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
 
-    // ==========================================
-    // CORREÇÃO PROBLEMA 1: Menu Mobile/Desktop
-    // ==========================================
-    
+    // Menu Toggle
     let menuOpen = false;
-    
     function toggleMenu() {
         menuOpen = !menuOpen;
         sidebar.classList.toggle('active', menuOpen);
         overlay.classList.toggle('active', menuOpen);
-        document.body.style.overflow = menuOpen ? 'hidden' : '';
     }
-    
-    // Fechar menu ao clicar no overlay
-    overlay.addEventListener('click', toggleMenu);
-    
-    // Botão menu
-    menuBtn.addEventListener('click', toggleMenu);
-    
-    // Fechar menu ao clicar em links (mobile)
-    document.querySelectorAll('.sidebar a').forEach(link => {
-        link.addEventListener('click', () => {
-            if (window.innerWidth < 1024) {
-                toggleMenu();
-            }
-        });
-    });
-    
-    // Detectar resize da janela
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            // Se estiver em desktop (>=1024), fecha o menu mobile
-            if (window.innerWidth >= 1024 && menuOpen) {
-                toggleMenu();
-            }
-        }, 250);
-    });
 
-    // ==========================================
-    // CORREÇÃO PROBLEMA 2: Auth Persistence
-    // ==========================================
-    
+    menuBtn.onclick = toggleMenu;
+    overlay.onclick = toggleMenu;
+
+    // LÓGICA DE AUTENTICAÇÃO E CARREGAMENTO
     let authInitialized = false;
-    
+
     onAuthStateChanged(auth, (user) => {
-        // Só executa o redirecionamento após a inicialização completa
         if (!authInitialized) {
             authInitialized = true;
             
             if (user) {
-                // Usuário logado - mostra app
-                console.log("Usuário autenticado:", user.email);
+                // Usuário logado
                 userTopbar.textContent = user.email;
                 userSidebar.textContent = user.email;
                 
-                // Esconde loading e mostra app
-                loadingEl.style.display = "none";
-                appEl.style.display = "flex";
+                // SIMULAÇÃO DO VÍDEO (1.5 segundos de loading)
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden'); // Fade out do loading
+                    appEl.style.display = "flex";          // Mostra o app
+                }, 1500);
+
             } else {
-                // Usuário NÃO logado - redireciona apenas se não estiver na página de login
-                console.log("Usuário não autenticado");
-                const currentPage = window.location.pathname;
-                if (!currentPage.includes('index') && !currentPage.includes('login')) {
-                    window.location.replace("index.html");
-                } else {
-                    loadingEl.style.display = "none";
-                }
-            }
-        } else {
-            // Atualizações de estado após inicialização
-            if (user) {
-                userTopbar.textContent = user.email;
-                userSidebar.textContent = user.email;
+                // Não logado, volta pro login
+                window.location.replace("index.html");
             }
         }
     });
 
-    // Funções de controle
+    // Funções de Botão (Simuladas - Integre com seu Database depois)
     window.testarBuzzer = function() {
         const btn = document.getElementById('btnBuzzer');
-        btn.textContent = '🔊 Acionando...';
+        btn.textContent = 'Acionando...';
         btn.disabled = true;
-        
         setTimeout(() => {
-            alert('🔊 Buzzer acionado!');
             btn.textContent = 'Testar';
             btn.disabled = false;
-        }, 800);
+            alert('Comando enviado ao Buzzer!');
+        }, 1000);
     };
 
     window.alternarLED = function() {
         const btn = document.getElementById('btnLED');
-        btn.textContent = '💡 Alternando...';
+        btn.textContent = 'Processando...';
         btn.disabled = true;
-        
         setTimeout(() => {
-            alert('💡 LED alternado!');
             btn.textContent = 'Alternar';
             btn.disabled = false;
-        }, 600);
+            alert('Estado do LED alterado!');
+        }, 1000);
     };
 
-    // Logout corrigido
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-        if (confirm('Deseja realmente sair?')) {
-            try {
-                await signOut(auth);
-                // Limpa dados da sessão
-                sessionStorage.clear();
-                window.location.replace("index.html");
-            } catch (error) {
-                console.error("Erro ao sair:", error);
-                alert("Erro ao sair: " + error.message);
-            }
+    // Logout
+    document.getElementById('logoutBtn').onclick = async () => {
+        if (confirm('Deseja sair do sistema?')) {
+            await signOut(auth);
+            window.location.replace("index.html");
         }
-    });
-    
-    // Fallback se imagem não carregar
-    document.querySelector('.logo').addEventListener('error', function() {
-        this.style.display = 'none';
-        document.getElementById('logoFallback').style.display = 'block';
-    });
+    };
 </script>
 
 </body>
