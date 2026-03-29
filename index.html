@@ -12,7 +12,8 @@
             margin: 0;
             height: 100vh;
             font-family: 'Inter', Arial, sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("background.jpg");
+            /* Overlay ajustado para a sua cor #143458 */
+            background: linear-gradient(rgba(20, 52, 88, 0.7), rgba(20, 52, 88, 0.8)), url("background.jpg");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -43,9 +44,10 @@
 
         h2 {
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-bottom: 20px;
             font-weight: 500;
+            line-height: 1.4;
         }
 
         input {
@@ -53,17 +55,24 @@
             padding: 14px;
             margin: 10px 0;
             border-radius: 12px;
-            border: none;
+            border: 2px solid transparent; /* Reserva espaço para o foco */
             outline: none;
             box-sizing: border-box;
             font-size: 14px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
+            transition: 0.3s;
+        }
+
+        /* Destaque no campo com a sua cor */
+        input:focus {
+            border-color: #143458;
+            background: #ffffff;
         }
 
         button {
             width: 100%;
             padding: 14px;
-            background: #143458;
+            background: #143458; /* Sua cor principal */
             color: white;
             border: none;
             border-radius: 12px;
@@ -77,6 +86,11 @@
             align-items: center;
         }
 
+        button:hover {
+            background: #1b4a75; /* Variação levemente mais clara para o hover */
+            transform: translateY(-1px);
+        }
+
         button:disabled {
             background: #0d233a;
             cursor: not-allowed;
@@ -84,34 +98,47 @@
         }
 
         .google-btn {
-            background: #e11d48; /* Tom de vermelho da sua imagem */
+            background: #ffffff;
+            color: #143458;
             margin-top: 15px;
+            border: 1px solid rgba(20, 52, 88, 0.2);
         }
 
-        /* O Spinner (Círculo de carregamento) */
+        .google-btn:hover {
+            background: #f1f1f1;
+            color: #143458;
+        }
+
         .spinner {
-            display: none; /* Escondido por padrão */
+            display: none;
             margin-right: 10px;
             font-size: 18px;
         }
 
         .link {
             margin-top: 15px;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
             font-size: 14px;
             text-decoration: none;
             display: block;
+            transition: 0.2s;
+        }
+
+        .link:hover {
+            color: #ffffff;
+            text-decoration: underline;
         }
 
         .error {
             color: #ff6b6b;
             margin-top: 15px;
-            font-size: 14px;
+            font-size: 13px;
             display: none;
-            background: rgba(0,0,0,0.2);
-            padding: 8px;
-            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
         }
     </style>
 </head>
@@ -130,7 +157,7 @@
     </button>
 
     <button class="google-btn" onclick="loginGoogle()">
-        Entrar com Google
+        <i class="fab fa-google" style="margin-right: 10px;"></i> Entrar com Google
     </button>
 
     <p class="link" onclick="esqueciSenha()">Esqueci minha senha</p>
@@ -163,7 +190,6 @@ const provider = new GoogleAuthProvider();
 
 let modo = "login";
 
-// Função para controlar o estado de carregamento do botão
 function setButtonLoading(isLoading) {
     const btn = document.getElementById("btnPrincipal");
     const icon = document.getElementById("loaderIcon");
@@ -188,7 +214,7 @@ window.trocarModo = function () {
 
     if (modo === "login") {
         modo = "cadastro";
-        titulo.innerText = "Cadastro";
+        titulo.innerText = "Crie sua conta no sistema";
         link.innerText = "Já tem conta? Entrar";
     } else {
         modo = "login";
@@ -211,7 +237,7 @@ window.acao = function () {
         return;
     }
 
-    setButtonLoading(true); // Ativa o spinner e muda o texto
+    setButtonLoading(true);
 
     if (modo === "cadastro") {
         createUserWithEmailAndPassword(auth, email, senha)
@@ -248,16 +274,17 @@ window.esqueciSenha = function () {
     let email = document.getElementById("email").value;
     if (!email) { alert("Digite seu email"); return; }
     sendPasswordResetEmail(auth, email)
-        .then(() => alert("Email enviado!"))
-        .catch((err) => alert(err.code));
+        .then(() => alert("Email enviado! Verifique sua caixa de entrada."))
+        .catch((err) => alert("Erro: " + err.code));
 };
 
 function traduzirErro(code) {
     switch (code) {
-        case "auth/email-already-in-use": return "E-mail já cadastrado";
-        case "auth/invalid-credential": return "E-mail ou senha incorretos";
-        case "auth/weak-password": return "Senha muito fraca";
-        default: return "Erro ao tentar acessar";
+        case "auth/email-already-in-use": return "Este e-mail já está em uso.";
+        case "auth/invalid-credential": return "E-mail ou senha incorretos.";
+        case "auth/weak-password": return "A senha deve ter pelo menos 6 caracteres.";
+        case "auth/invalid-email": return "Formato de e-mail inválido.";
+        default: return "Ocorreu um erro ao tentar acessar.";
     }
 }
 </script>
