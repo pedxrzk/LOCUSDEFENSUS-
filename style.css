@@ -18,40 +18,48 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
-/* BASE */
+/* BASE - Impede scrolls indesejados na página toda */
 html, body {
   height: 100%;
-  background: var(--background);
-  color: var(--text);
-}
-
-/* LAYOUT PRINCIPAL */
-.app {
-  display: flex; /* Alinha sidebar e main lado a lado no desktop */
-  min-height: 100vh;
   width: 100%;
+  overflow: hidden; 
+  background: var(--background);
 }
 
-/* SIDEBAR */
+/* LAYOUT PRINCIPAL (O segredo está aqui) */
+.app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* SIDEBAR - Fixa na lateral esquerda */
 .sidebar {
   width: 260px;
-  flex-shrink: 0; /* Impede a sidebar de "esmagar" */
+  height: 100%;
   background: var(--primary);
   color: white;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  position: sticky; /* Mantém a sidebar fixa ao rolar a página no desktop */
-  top: 0;
+  flex-shrink: 0; /* Não deixa a sidebar "amassar" */
   transition: transform 0.3s ease;
-  z-index: 1000;
 }
 
-/* LINKS */
+.logo-card {
+  padding: 15px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.logo {
+  max-width: 100%;
+  height: auto;
+}
+
 .sidebar a {
   color: white;
   text-decoration: none;
@@ -62,124 +70,68 @@ html, body {
   transition: 0.2s;
 }
 
-.sidebar a:hover,
-.sidebar a.active {
+.sidebar a:hover, .sidebar a.active {
   background: var(--primary-light);
 }
 
-/* LOGO */
-.logo-card {
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 25px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.logo {
-  width: 100%;
-  max-width: 180px;
-}
-
-/* BOTÃO SAIR */
 .btn-danger {
-  margin-top: auto; /* Empurra o botão para o final da sidebar */
+  margin-top: auto; /* Joga o botão de sair para o rodapé */
   padding: 12px;
   border-radius: 10px;
-  border: none;
   background: var(--danger);
   color: white;
+  border: none;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.btn-danger:hover {
-  background: var(--danger-dark);
-}
-
-/* CONTEÚDO PRINCIPAL */
+/* MAIN - Onde o conteúdo rola independentemente */
 .main {
-  flex: 1; /* Ocupa todo o espaço restante do flexbox */
+  flex: 1;
+  height: 100%;
+  overflow-y: auto; /* Só o conteúdo principal tem scroll */
   padding: 30px;
-  min-width: 0; /* Evita quebra de layout com conteúdos largos */
-  overflow-y: auto;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
 }
 
 /* TOPBAR */
 .topbar {
   display: flex;
-  justify-content: space-between; /* Espaça título do email */
+  justify-content: space-between;
   align-items: center;
   background: white;
-  padding: 20px 25px;
+  padding: 20px;
   border-radius: var(--radius);
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   box-shadow: var(--shadow);
+  flex-shrink: 0;
 }
 
-.topbar-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.topbar h2 {
-  font-size: 22px;
-  color: var(--primary);
-}
-
-.user-email {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* MENU BUTTON (Escondido no Desktop) */
 .menu-btn {
+  display: none; /* Escondido no Desktop */
   font-size: 24px;
   background: none;
   border: none;
-  color: var(--primary);
   cursor: pointer;
-  display: none; /* Só aparece no mobile */
-  margin-right: 15px;
 }
 
-/* GRID DE CARDS */
+/* CARDS */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 25px;
+  gap: 20px;
 }
 
 .card {
   background: var(--card-bg);
-  padding: 25px;
+  padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  transition: 0.3s;
-  border-left: 5px solid var(--primary-light);
+  border-left: 4px solid var(--primary-light);
 }
 
-.card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-5px);
-}
-
-.card h3 {
-  font-size: 14px;
-  color: var(--muted);
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.card p {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--primary);
-}
-
-/* OVERLAY (Celular) */
+/* OVERLAY */
 .overlay {
   position: fixed;
   inset: 0;
@@ -188,37 +140,32 @@ html, body {
   z-index: 998;
 }
 
-/* 📱 RESPONSIVIDADE (Celular) */
+/* 📱 RESPONSIVIDADE (MOBILE) */
 @media (max-width: 768px) {
   .app {
-    display: block; /* Tira o layout lado a lado */
-  }
-
-  .menu-btn {
-    display: block;
+    display: block; /* No mobile volta a ser empilhado */
   }
 
   .sidebar {
     position: fixed;
-    left: -260px; /* Esconde */
-    top: 0;
-    transition: 0.3s ease;
+    left: -260px; /* Esconde a sidebar */
+    z-index: 999;
   }
 
   .sidebar.active {
-    left: 0; /* Desliza para dentro */
+    left: 0;
   }
 
   .overlay.active {
     display: block;
   }
 
-  .main {
-    padding: 20px;
+  .menu-btn {
+    display: block; /* Mostra o botão hambúrguer */
   }
 
-  .topbar {
-    justify-content: flex-start;
+  .main {
     padding: 15px;
+    height: 100vh;
   }
 }
