@@ -51,9 +51,9 @@
 
 <body>
 
-<div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p>Carregando equipe...</p>
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-circular"></div>
+    <p id="loadingText">Carregando equipe...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
@@ -70,15 +70,14 @@
         <a href="quem.html" class="active">👥 Quem Somos</a>
         <a href="sobre.html">ℹ️ Sobre</a>
 
-       <div style="margin-top: 20px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-    <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 10px;" id="userSidebar">
-        usuario@email.com
-    </p>
-    <button class="btn-danger" id="logoutBtn" style="width: 100%;">
-        🚪 Sair
-    </button>
-</div>
-
+        <div style="margin-top: 20px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
+                carregando...
+            </p>
+            <button class="btn-danger" id="logoutBtn" style="width: 100%;">
+                🚪 Sair
+            </button>
+        </div>
     </nav>
 
     <div class="overlay" id="overlay"></div>
@@ -124,7 +123,6 @@
                 <span>Hardware & ESP32</span>
             </div>
         </div>
-
     </main>
 </div>
 
@@ -155,7 +153,8 @@
     const auth = getAuth(app);
     setPersistence(auth, browserLocalPersistence);
 
-    const loadingEl = document.getElementById('loading');
+    // Selecionando IDs atualizados para o efeito de loading
+    const loadingOverlay = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
     const userTopbar = document.getElementById('userTopbar');
     const userSidebar = document.getElementById('userSidebar');
@@ -174,7 +173,7 @@
     menuBtn.onclick = toggleMenu;
     overlay.onclick = toggleMenu;
 
-    // Auth monitor
+    // Lógica de Autenticação com Efeito de Loading
     let authInitialized = false;
     onAuthStateChanged(auth, (user) => {
         if (!authInitialized) {
@@ -182,8 +181,13 @@
             if (user) {
                 userTopbar.textContent = user.email;
                 userSidebar.textContent = user.email;
-                loadingEl.style.display = "none";
-                appEl.style.display = "flex";
+                
+                // Simula o delay do vídeo (1.5 segundos) antes de revelar a página
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden'); // Fade-out suave via CSS
+                    appEl.style.display = "flex";          // Revela o layout
+                }, 1500);
+
             } else {
                 window.location.replace("index.html");
             }
