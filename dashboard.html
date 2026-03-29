@@ -2,75 +2,88 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Locus Defensus - Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dashboard - Limno</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p>Carregando dashboard...</p>
+    <p>Carregando dados...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
 
-    <div class="sidebar">
+    <nav class="sidebar" id="sidebar">
         <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+            <img src="logo.sidebar.png" alt="Limno Logo" class="logo" onerror="this.style.display='none'">
+            <span style="font-size: 24px; font-weight: bold; color: white; display: none;" id="logoFallback">LIMNO</span>
         </div>
 
-        <nav>
-            <a href="dashboard.html" class="active">Dashboard</a>
-            <a href="controle.html">Controle</a>
-            <a href="historico.html">Histórico</a>
-            <a href="quem.html">Quem Somos</a>
-            <a href="sobre.html">Sobre</a>
-        </nav>
+        <a href="dashboard.html" class="active">📊 Dashboard</a>
+        <a href="controle.html">🎮 Controle</a>
+        <a href="historico.html">📜 Histórico</a>
+        <a href="quem.html">👥 Quem Somos</a>
+        <a href="sobre.html">ℹ️ Sobre</a>
 
-        <button class="btn-danger" id="logoutBtn">Sair</button>
-    </div>
+        <div style="margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 10px; word-break: break-all;" id="userSidebar">
+                carregando...
+            </p>
+            <button class="btn-danger" id="logoutBtn" style="width: 100%;">
+                🚪 Sair
+            </button>
+        </div>
+    </nav>
 
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="overlay" id="overlay"></div>
 
-    <div class="main">
+    <main class="main">
 
-        <div class="topbar">
-            <div style="display: flex; align-items: center;">
-                <button class="menu-btn" onclick="toggleMenu()">☰</button>
-                <h2>Dashboard</h2>
+        <header class="topbar">
+            <div style="flex: 1; min-width: 0;">
+                <h2>Painel Principal</h2>
+                <p class="user-email" id="userTopbar">carregando...</p>
             </div>
-            <p id="user" class="user-email"></p>
-        </div>
+            <button class="menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
+        </header>
 
         <div class="cards">
-            <div class="card">
+
+            <article class="card">
                 <h3>🌡️ Temperatura</h3>
                 <p>25.7°C</p>
-            </div>
+            </article>
 
-            <div class="card">
+            <article class="card">
                 <h3>💧 Umidade</h3>
                 <p>55%</p>
-            </div>
+            </article>
 
-            <div class="card">
+            <article class="card">
                 <h3>📊 Pressão</h3>
                 <p>Normal</p>
-            </div>
+            </article>
 
-            <div class="card">
+            <article class="card">
                 <h3>🔊 Buzzer</h3>
                 <p>Desligado</p>
-            </div>
+            </article>
 
-            <div class="card">
+            <article class="card">
                 <h3>💡 LED</h3>
                 <p>Ligado</p>
-            </div>
+            </article>
+
         </div>
 
-    </div>
+    </main>
+
 </div>
 
 <script type="importmap">
@@ -84,7 +97,7 @@
 
 <script type="module">
     import { initializeApp } from "firebase/app";
-    import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
@@ -98,46 +111,64 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    
+    // Mantém o usuário logado ao atualizar a página
+    setPersistence(auth, browserLocalPersistence);
 
     const loadingEl = document.getElementById('loading');
     const appEl = document.getElementById('app');
-    const userEl = document.getElementById('user');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const userTopbar = document.getElementById('userTopbar');
+    const userSidebar = document.getElementById('userSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
 
-    // ✅ Função toggleMenu global para mobile
-    window.toggleMenu = function() {
-        const sidebar = document.querySelector(".sidebar");
-        const overlay = document.querySelector(".overlay");
-        sidebar.classList.toggle("active");
-        overlay.classList.toggle("active");
-    };
+    // ✅ Lógica de Menu Padronizada
+    let menuOpen = false;
+    function toggleMenu() {
+        menuOpen = !menuOpen;
+        sidebar.classList.toggle('active', menuOpen);
+        overlay.classList.toggle('active', menuOpen);
+        document.body.style.overflow = menuOpen ? 'hidden' : '';
+    }
+
+    overlay.addEventListener('click', toggleMenu);
+    menuBtn.addEventListener('click', toggleMenu);
+
+    // ✅ Verificação de Autenticação
+    let authInitialized = false;
+
+    onAuthStateChanged(auth, (user) => {
+        if (!authInitialized) {
+            authInitialized = true;
+            if (user) {
+                userTopbar.textContent = user.email;
+                userSidebar.textContent = user.email;
+                loadingEl.style.display = "none";
+                appEl.style.display = "flex";
+            } else {
+                window.location.replace("index.html");
+            }
+        }
+    });
 
     // ✅ Logout
-    const handleLogout = async () => {
-        try {
-            await signOut(auth);
-            window.location.replace("index.html");
-        } catch (error) {
-            console.error("Erro ao sair:", error);
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        if (confirm('Deseja realmente sair?')) {
+            try {
+                await signOut(auth);
+                sessionStorage.clear();
+                window.location.replace("index.html");
+            } catch (error) {
+                console.error("Erro ao sair:", error);
+            }
         }
-    };
+    });
 
-    if (logoutBtn) logoutBtn.onclick = handleLogout;
-
-    // ✅ Monitor de Autenticação
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // Usuário logado
-            if (userEl) userEl.innerText = "👤 " + user.email;
-            
-            // TRANSISÇÃO: Esconde loading e mostra app como FLEX
-            loadingEl.style.display = "none";
-            appEl.style.display = "flex"; 
-            
-        } else {
-            // Usuário não logado
-            window.location.replace("index.html");
-        }
+    // Fallback Logo
+    document.querySelector('.logo').addEventListener('error', function() {
+        this.style.display = 'none';
+        document.getElementById('logoFallback').style.display = 'block';
     });
 </script>
 
