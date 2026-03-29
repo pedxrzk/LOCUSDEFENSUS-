@@ -25,7 +25,7 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            padding: 40px 30px; /* Aumentado o padding vertical */
+            padding: 40px 30px;
             box-sizing: border-box;
             border-radius: 20px;
             width: 90%;
@@ -60,6 +60,7 @@
             font-size: 14px;
             background: rgba(255, 255, 255, 0.95);
             transition: 0.3s;
+            text-align: center; /* Centraliza o número do protótipo */
         }
 
         input:focus {
@@ -101,7 +102,6 @@
             font-size: 18px;
         }
 
-        /* Ajuste no espaçamento dos links para preencher o layout */
         .link-container {
             margin-top: 25px;
         }
@@ -137,19 +137,18 @@
 
 <div class="login-box">
     <img src="logo.png" class="logo">
-    <h2 id="titulo">Acesse o sistema de monitoramento remoto</h2>
+    <h2 id="titulo">Identificação do Protótipo</h2>
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="senha" placeholder="Senha">
+    <input type="text" id="serialNumber" placeholder="Nº de Série (ex: 00001)">
+    <input type="password" id="senha" placeholder="Senha de Acesso">
 
     <button id="btnPrincipal" onclick="acao()">
         <i id="loaderIcon" class="fas fa-circle-notch fa-spin spinner"></i>
-        <span id="btnText">Entrar</span>
+        <span id="btnText">Aceder Protótipo</span>
     </button>
 
     <div class="link-container">
-        <p class="link" onclick="esqueciSenha()">Esqueci minha senha</p>
-        <p class="link" id="toggleLink" onclick="trocarModo()">Não tem conta? Cadastre-se</p>
+        <p class="link" id="toggleLink" onclick="trocarModo()">Novo dispositivo? Registar</p>
     </div>
 
     <p class="error" id="erro"></p>
@@ -159,7 +158,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  sendPasswordResetEmail, setPersistence, browserLocalPersistence
+  setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -187,11 +186,11 @@ function setButtonLoading(isLoading) {
     if (isLoading) {
         btn.disabled = true;
         icon.style.display = "inline-block";
-        text.innerText = "Aguardando...";
+        text.innerText = "A validar...";
     } else {
         btn.disabled = false;
         icon.style.display = "none";
-        text.innerText = modo === "login" ? "Entrar" : "Cadastrar";
+        text.innerText = modo === "login" ? "Aceder Protótipo" : "Registar Serial";
     }
 }
 
@@ -203,70 +202,64 @@ window.trocarModo = function () {
 
     if (modo === "login") {
         modo = "cadastro";
-        titulo.innerText = "Crie sua conta no sistema";
-        link.innerText = "Já tem conta? Entrar";
+        titulo.innerText = "Registar novo Serial";
+        link.innerText = "Já tem acesso? Entrar";
     } else {
         modo = "login";
-        titulo.innerText = "Acesse o sistema de monitoramento remoto";
-        link.innerText = "Não tem conta? Cadastre-se";
+        titulo.innerText = "Identificação do Protótipo";
+        link.innerText = "Novo dispositivo? Registar";
     }
     setButtonLoading(false);
 };
 
 window.acao = function () {
-    let email = document.getElementById("email").value;
+    let serial = document.getElementById("serialNumber").value.trim();
     let senha = document.getElementById("senha").value;
     let erro = document.getElementById("erro");
 
     erro.style.display = "none";
 
-    if (!email || !senha) {
-        erro.innerText = "Preencha todos os campos";
+    if (!serial || !senha) {
+        erro.innerText = "Preencha o Serial e a Senha";
         erro.style.display = "block";
         return;
     }
 
+    // AQUI ACONTECE A MÁGICA:
+    // Pega o "00001" e envia para o Firebase como "00001@locus.com"
+    const identificadorFirebase = `${serial.toLowerCase()}@locus.com`;
+
     setButtonLoading(true);
 
     if (modo === "cadastro") {
-        createUserWithEmailAndPassword(auth, email, senha)
+        createUserWithEmailAndPassword(auth, identificadorFirebase, senha)
             .then(() => {
-                alert("Conta criada com sucesso 🚀");
-                trocarModo();
+                alert("Serial " + serial + " registado!");
+                window.location.href = "dashboard.html";
             })
             .catch((error) => {
                 setButtonLoading(false);
-                erro.innerText = traduzirErro(error.code);
+                erro.innerText = "Erro: " + traduzirErro(error.code);
                 erro.style.display = "block";
             });
     } else {
-        signInWithEmailAndPassword(auth, email, senha)
+        signInWithEmailAndPassword(auth, identificadorFirebase, senha)
             .then(() => {
                 window.location.href = "dashboard.html";
             })
             .catch((error) => {
                 setButtonLoading(false);
-                erro.innerText = traduzirErro(error.code);
+                erro.innerText = "Nº de Série ou senha incorretos.";
                 erro.style.display = "block";
             });
     }
 };
 
-window.esqueciSenha = function () {
-    let email = document.getElementById("email").value;
-    if (!email) { alert("Digite seu email"); return; }
-    sendPasswordResetEmail(auth, email)
-        .then(() => alert("Email enviado! Verifique sua caixa de entrada."))
-        .catch((err) => alert("Erro: " + err.code));
-};
-
 function traduzirErro(code) {
     switch (code) {
-        case "auth/email-already-in-use": return "Este e-mail já está em uso.";
-        case "auth/invalid-credential": return "E-mail ou senha incorretos.";
+        case "auth/email-already-in-use": return "Este Serial já está em uso.";
         case "auth/weak-password": return "A senha deve ter pelo menos 6 caracteres.";
-        case "auth/invalid-email": return "Formato de e-mail inválido.";
-        default: return "Ocorreu um erro ao tentar acessar.";
+        default: return "Erro ao processar acesso.";
     }
 }
 </script>
