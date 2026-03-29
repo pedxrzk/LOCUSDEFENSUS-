@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
+        /* ... Seu CSS original permanece aqui ... */
         body {
             margin: 0;
             height: 100vh;
             font-family: 'Inter', Arial, sans-serif;
-            /* Overlay ajustado para a sua cor #143458 */
             background: linear-gradient(rgba(20, 52, 88, 0.7), rgba(20, 52, 88, 0.8)), url("background.jpg");
             background-size: cover;
             background-position: center;
@@ -55,7 +55,7 @@
             padding: 14px;
             margin: 10px 0;
             border-radius: 12px;
-            border: 2px solid transparent; /* Reserva espaço para o foco */
+            border: 2px solid transparent;
             outline: none;
             box-sizing: border-box;
             font-size: 14px;
@@ -63,7 +63,6 @@
             transition: 0.3s;
         }
 
-        /* Destaque no campo com a sua cor */
         input:focus {
             border-color: #143458;
             background: #ffffff;
@@ -72,7 +71,7 @@
         button {
             width: 100%;
             padding: 14px;
-            background: #143458; /* Sua cor principal */
+            background: #143458;
             color: white;
             border: none;
             border-radius: 12px;
@@ -87,7 +86,7 @@
         }
 
         button:hover {
-            background: #1b4a75; /* Variação levemente mais clara para o hover */
+            background: #1b4a75;
             transform: translateY(-1px);
         }
 
@@ -188,6 +187,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
+// AJUSTE 1: Forçar persistência logo na inicialização para evitar o erro de estado no APK
+setPersistence(auth, browserLocalPersistence).catch(e => console.error(e));
+
 let modo = "login";
 
 function setButtonLoading(isLoading) {
@@ -251,8 +253,8 @@ window.acao = function () {
                 erro.style.display = "block";
             });
     } else {
-        setPersistence(auth, browserLocalPersistence)
-            .then(() => signInWithEmailAndPassword(auth, email, senha))
+        // Removido setPersistence daqui pois agora ele já está no topo (global)
+        signInWithEmailAndPassword(auth, email, senha)
             .then(() => {
                 window.location.href = "dashboard.html";
             })
@@ -264,10 +266,19 @@ window.acao = function () {
     }
 };
 
+// AJUSTE 2: Melhoria no tratamento de erro do Google para ambientes de WebView (APK)
 window.loginGoogle = function () {
     signInWithPopup(auth, provider)
-        .then(() => window.location.href = "dashboard.html")
-        .catch((error) => alert(error.message));
+        .then(() => {
+            window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+            if(error.code === 'auth/web-storage-unsupported' || error.message.includes('initial state')) {
+                alert("Ocorreu um erro de sessão no APK. Por favor, tente entrar com e-mail e senha.");
+            } else {
+                alert("Erro ao entrar com Google: " + error.message);
+            }
+        });
 };
 
 window.esqueciSenha = function () {
