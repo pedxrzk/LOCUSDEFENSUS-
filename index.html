@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
-        /* ... Seu CSS original permanece aqui ... */
         body {
             margin: 0;
             height: 100vh;
@@ -26,7 +25,7 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            padding: 30px;
+            padding: 40px 30px; /* Aumentado o padding vertical */
             box-sizing: border-box;
             border-radius: 20px;
             width: 90%;
@@ -45,7 +44,7 @@
         h2 {
             color: white;
             font-size: 1.1rem;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-weight: 500;
             line-height: 1.4;
         }
@@ -78,7 +77,7 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
-            margin-top: 10px;
+            margin-top: 15px;
             transition: all 0.3s ease;
             display: flex;
             justify-content: center;
@@ -96,26 +95,19 @@
             opacity: 0.8;
         }
 
-        .google-btn {
-            background: #ffffff;
-            color: #143458;
-            margin-top: 15px;
-            border: 1px solid rgba(20, 52, 88, 0.2);
-        }
-
-        .google-btn:hover {
-            background: #f1f1f1;
-            color: #143458;
-        }
-
         .spinner {
             display: none;
             margin-right: 10px;
             font-size: 18px;
         }
 
+        /* Ajuste no espaçamento dos links para preencher o layout */
+        .link-container {
+            margin-top: 25px;
+        }
+
         .link {
-            margin-top: 15px;
+            margin: 12px 0;
             color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
             font-size: 14px;
@@ -155,12 +147,10 @@
         <span id="btnText">Entrar</span>
     </button>
 
-    <button class="google-btn" onclick="loginGoogle()">
-        <i class="fab fa-google" style="margin-right: 10px;"></i> Entrar com Google
-    </button>
-
-    <p class="link" onclick="esqueciSenha()">Esqueci minha senha</p>
-    <p class="link" id="toggleLink" onclick="trocarModo()">Não tem conta? Cadastre-se</p>
+    <div class="link-container">
+        <p class="link" onclick="esqueciSenha()">Esqueci minha senha</p>
+        <p class="link" id="toggleLink" onclick="trocarModo()">Não tem conta? Cadastre-se</p>
+    </div>
 
     <p class="error" id="erro"></p>
 </div>
@@ -169,8 +159,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider,
-  setPersistence, browserLocalPersistence
+  sendPasswordResetEmail, setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -185,9 +174,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
 
-// AJUSTE 1: Forçar persistência logo na inicialização para evitar o erro de estado no APK
 setPersistence(auth, browserLocalPersistence).catch(e => console.error(e));
 
 let modo = "login";
@@ -253,7 +240,6 @@ window.acao = function () {
                 erro.style.display = "block";
             });
     } else {
-        // Removido setPersistence daqui pois agora ele já está no topo (global)
         signInWithEmailAndPassword(auth, email, senha)
             .then(() => {
                 window.location.href = "dashboard.html";
@@ -264,21 +250,6 @@ window.acao = function () {
                 erro.style.display = "block";
             });
     }
-};
-
-// AJUSTE 2: Melhoria no tratamento de erro do Google para ambientes de WebView (APK)
-window.loginGoogle = function () {
-    signInWithPopup(auth, provider)
-        .then(() => {
-            window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-            if(error.code === 'auth/web-storage-unsupported' || error.message.includes('initial state')) {
-                alert("Ocorreu um erro de sessão no APK. Por favor, tente entrar com e-mail e senha.");
-            } else {
-                alert("Erro ao entrar com Google: " + error.message);
-            }
-        });
 };
 
 window.esqueciSenha = function () {
