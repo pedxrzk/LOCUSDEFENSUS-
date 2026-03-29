@@ -61,14 +61,13 @@
         <a href="sobre.html">ℹ️ Sobre</a>
 
         <div style="margin-top: 20px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-    <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 10px;" id="userSidebar">
-        usuario@email.com
-    </p>
-    <button class="btn-danger" id="logoutBtn" style="width: 100%;">
-        🚪 Sair
-    </button>
-</div>
-
+            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
+                carregando...
+            </p>
+            <button class="btn-danger" id="logoutBtn" style="width: 100%;">
+                🚪 Sair
+            </button>
+        </div>
     </nav>
 
     <div class="overlay" id="overlay"></div>
@@ -139,7 +138,8 @@
     const auth = getAuth(app);
     setPersistence(auth, browserLocalPersistence);
 
-    const loadingEl = document.getElementById('loading');
+    // Selecionando elementos com os IDs atualizados
+    const loadingOverlay = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
     const userTopbar = document.getElementById('userTopbar');
     const userSidebar = document.getElementById('userSidebar');
@@ -158,16 +158,22 @@
     menuBtn.onclick = toggleMenu;
     overlay.onclick = toggleMenu;
 
-    // Auth monitor
+    // Lógica de Autenticação com o Efeito de Loading do Vídeo
     let authInitialized = false;
+
     onAuthStateChanged(auth, (user) => {
         if (!authInitialized) {
             authInitialized = true;
             if (user) {
                 userTopbar.textContent = user.email;
                 userSidebar.textContent = user.email;
-                loadingEl.style.display = "none";
-                appEl.style.display = "flex";
+                
+                // Efeito de 1.5 segundos igual ao vídeo enviado
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden'); // Fade out suave (via CSS)
+                    appEl.style.display = "flex";          // Mostra o conteúdo
+                }, 1500); 
+
             } else {
                 window.location.replace("index.html");
             }
@@ -177,8 +183,12 @@
     // Logout
     document.getElementById('logoutBtn').onclick = async () => {
         if (confirm('Deseja sair do histórico?')) {
-            await signOut(auth);
-            window.location.replace("index.html");
+            try {
+                await signOut(auth);
+                window.location.replace("index.html");
+            } catch (error) {
+                console.error("Erro ao sair:", error);
+            }
         }
     };
 </script>
