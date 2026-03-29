@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
-        /* ... Seu CSS original permanece aqui ... */
         body {
             margin: 0;
             height: 100vh;
@@ -169,7 +168,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider,
+  sendPasswordResetEmail, signInWithRedirect, getRedirectResult, GoogleAuthProvider,
   setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -187,8 +186,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// AJUSTE 1: Forçar persistência logo na inicialização para evitar o erro de estado no APK
+// AJUSTE: Forçar persistência
 setPersistence(auth, browserLocalPersistence).catch(e => console.error(e));
+
+// NOVIDADE: Captura o resultado do redirecionamento do Google ao voltar para o app
+getRedirectResult(auth)
+  .then((result) => {
+    if (result) {
+      window.location.href = "dashboard.html";
+    }
+  }).catch((error) => {
+    console.error("Erro no retorno do login:", error);
+  });
 
 let modo = "login";
 
@@ -253,7 +262,6 @@ window.acao = function () {
                 erro.style.display = "block";
             });
     } else {
-        // Removido setPersistence daqui pois agora ele já está no topo (global)
         signInWithEmailAndPassword(auth, email, senha)
             .then(() => {
                 window.location.href = "dashboard.html";
@@ -266,19 +274,9 @@ window.acao = function () {
     }
 };
 
-// AJUSTE 2: Melhoria no tratamento de erro do Google para ambientes de WebView (APK)
+// MUDANÇA: Agora usa Redirect para evitar bloqueios de popup no APK
 window.loginGoogle = function () {
-    signInWithPopup(auth, provider)
-        .then(() => {
-            window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-            if(error.code === 'auth/web-storage-unsupported' || error.message.includes('initial state')) {
-                alert("Ocorreu um erro de sessão no APK. Por favor, tente entrar com e-mail e senha.");
-            } else {
-                alert("Erro ao entrar com Google: " + error.message);
-            }
-        });
+    signInWithRedirect(auth, provider);
 };
 
 window.esqueciSenha = function () {
