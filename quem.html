@@ -1,200 +1,130 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quem Somos</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Quem Somos - Limno</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos da página mantendo a paleta do sistema */
+        .about-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+        .about-container h1 { color: var(--primary); margin-bottom: 15px; }
+        .about-container p { line-height: 1.6; color: var(--muted); margin-bottom: 15px; }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .member-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-bottom: 4px solid var(--primary-light);
+            transition: 0.3s;
+        }
+        .member-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .member-avatar {
+            font-size: 40px;
+            background: var(--background);
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+        }
+        .member-card h3 { color: var(--text); margin-bottom: 5px; }
+        .member-card span { color: var(--primary-light); font-weight: 600; font-size: 14px; }
+    </style>
 </head>
 
 <body>
 
-<!-- LOADING -->
-<div class="loading" id="loading" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 20px;">
-    <div class="spinner" style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-    <p>Carregando...</p>
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Carregando equipe...</p>
 </div>
 
-<style>
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    /* Estilos específicos para página Quem Somos */
-    .about-box {
-        background: white;
-        border-radius: 15px;
-        padding: 30px;
-        margin: 20px 30px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        text-align: center;
-    }
-    
-    .about-box h1 {
-        color: #667eea;
-        font-size: 32px;
-        margin-bottom: 20px;
-    }
-    
-    .about-box p {
-        color: #555;
-        font-size: 16px;
-        line-height: 1.6;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    
-    .team {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 25px;
-        padding: 20px 30px 30px 30px;
-    }
-    
-    .team-card {
-        background: white;
-        border-radius: 15px;
-        padding: 25px;
-        text-align: center;
-        transition: transform 0.3s, box-shadow 0.3s;
-        cursor: pointer;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    }
-    
-    .team-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-    
-    .avatar {
-        font-size: 64px;
-        margin-bottom: 15px;
-        display: inline-block;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 15px auto;
-        background: #f0f0f0;
-    }
-    
-    .team-card h3 {
-        color: #333;
-        font-size: 20px;
-        margin-bottom: 8px;
-    }
-    
-    .team-card span {
-        color: #667eea;
-        font-size: 14px;
-        font-weight: 500;
-    }
-    
-    @media (max-width: 768px) {
-        .about-box {
-            margin: 20px;
-            padding: 20px;
-        }
-        
-        .about-box h1 {
-            font-size: 24px;
-        }
-        
-        .team {
-            padding: 20px;
-            gap: 15px;
-        }
-        
-        .avatar {
-            width: 80px;
-            height: 80px;
-            font-size: 48px;
-        }
-    }
-</style>
+<div class="app" id="app" style="display: none;">
 
-<div class="app" style="display: none;" id="app">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
+    <nav class="sidebar" id="sidebar">
         <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+            <img src="logo.sidebar.png" alt="Limno Logo" class="logo" onerror="this.style.display='none'">
+            <span style="font-size: 24px; font-weight: bold; color: white; display: none;" id="logoFallback">LIMNO</span>
         </div>
 
-        <a href="dashboard.html">Dashboard</a>
-        <a href="controle.html">Controle</a>
-        <a href="historico.html">Histórico</a>
-        <a href="quem.html" class="active">Quem Somos</a>
-        <a href="sobre.html">Sobre</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="controle.html">🎮 Controle</a>
+        <a href="historico.html">📜 Histórico</a>
+        <a href="quem.html" class="active">👥 Quem Somos</a>
+        <a href="sobre.html">ℹ️ Sobre</a>
 
-        <button class="btn btn-danger mt-20" id="logoutBtn">
-            Sair
-        </button>
-    </div>
-
-    <!-- OVERLAY -->
-    <div class="overlay" onclick="toggleMenu()"></div>
-
-    <!-- CONTEÚDO -->
-    <div class="main">
-
-        <div class="topbar">
-            <button class="menu-btn" onclick="toggleMenu()">☰</button>
-            <h2>Quem Somos</h2>
-            <p id="user"></p>
+        <div style="margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 10px; word-break: break-all;" id="userSidebar">
+                carregando...
+            </p>
+            <button class="btn-danger" id="logoutBtn" style="width: 100%;">
+                🚪 Sair
+            </button>
         </div>
+    </nav>
 
-        <div class="about-box">
+    <div class="overlay" id="overlay"></div>
+
+    <main class="main">
+
+        <header class="topbar">
+            <div style="flex: 1; min-width: 0;">
+                <h2>Nossa Equipe</h2>
+                <p class="user-email" id="userTopbar">carregando...</p>
+            </div>
+            <button class="menu-btn" id="menuBtn">☰</button>
+        </header>
+
+        <section class="about-container">
             <h1>🚀 Locus Defensus</h1>
-            <p>
-                Somos uma equipe apaixonada por tecnologia e inovação, focada no desenvolvimento de soluções inteligentes de monitoramento. 
-                Utilizamos sensores de última geração e tecnologia IoT com ESP32 para coleta e análise de dados em tempo real, 
-                proporcionando segurança e eficiência para nossos clientes.
-            </p>
-            <br>
-            <p>
-                <strong>Missão:</strong> Oferecer soluções de monitoramento acessíveis e de alta qualidade.<br>
-                <strong>Visão:</strong> Ser referência em IoT e automação no mercado brasileiro.<br>
-                <strong>Valores:</strong> Inovação, comprometimento e excelência.
-            </p>
-        </div>
+            <p>Somos uma equipe focada no desenvolvimento de soluções inteligentes de monitoramento IoT, utilizando ESP32 para análise de dados em tempo real.</p>
+            <p><strong>Missão:</strong> Segurança e eficiência através da tecnologia acessível.</p>
+        </section>
 
-        <div class="team">
-            <div class="team-card">
-                <div class="avatar">👨‍💻</div>
+        <div class="team-grid">
+            <div class="member-card">
+                <div class="member-avatar">👨‍💻</div>
                 <h3>Pedro Paulo</h3>
                 <span>Frontend & UI Designer</span>
-                <p style="margin-top: 10px; font-size: 12px; color: #888;">Responsável pela interface e experiência do usuário</p>
             </div>
 
-            <div class="team-card">
-                <div class="avatar">🧪</div>
+            <div class="member-card">
+                <div class="member-avatar">🧪</div>
                 <h3>Yasmin</h3>
                 <span>Testes & Validação</span>
-                <p style="margin-top: 10px; font-size: 12px; color: #888;">Garante a qualidade e funcionamento do sistema</p>
             </div>
 
-            <div class="team-card">
-                <div class="avatar">📄</div>
+            <div class="member-card">
+                <div class="member-avatar">📄</div>
                 <h3>Kelen</h3>
                 <span>Documentação</span>
-                <p style="margin-top: 10px; font-size: 12px; color: #888;">Responsável pela documentação técnica e manuais</p>
             </div>
 
-            <div class="team-card">
-                <div class="avatar">⚙️</div>
+            <div class="member-card">
+                <div class="member-avatar">⚙️</div>
                 <h3>Equipe IoT</h3>
                 <span>Hardware & ESP32</span>
-                <p style="margin-top: 10px; font-size: 12px; color: #888;">Desenvolvimento e integração dos sensores</p>
             </div>
         </div>
 
-    </div>
-
+    </main>
 </div>
 
 <script type="importmap">
@@ -208,9 +138,8 @@
 
 <script type="module">
     import { initializeApp } from "firebase/app";
-    import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
 
-    // Firebase Config - COMPLETA
     const firebaseConfig = {
         apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
         authDomain: "coleta-7fecd.firebaseapp.com",
@@ -223,69 +152,50 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    setPersistence(auth, browserLocalPersistence);
 
     const loadingEl = document.getElementById('loading');
     const appEl = document.getElementById('app');
-    const userEl = document.getElementById('user');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const userTopbar = document.getElementById('userTopbar');
+    const userSidebar = document.getElementById('userSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
 
-    // Função toggleMenu (global)
-    window.toggleMenu = function() {
-        const sidebar = document.querySelector(".sidebar");
-        const overlay = document.querySelector(".overlay");
-        if (sidebar && overlay) {
-            sidebar.classList.toggle("active");
-            overlay.classList.toggle("active");
-        }
-    };
+    // Menu Toggle
+    let menuOpen = false;
+    function toggleMenu() {
+        menuOpen = !menuOpen;
+        sidebar.classList.toggle('active', menuOpen);
+        overlay.classList.toggle('active', menuOpen);
+    }
 
-    // Fechar menu ao clicar nos links (mobile)
-    document.querySelectorAll(".sidebar a").forEach(link => {
-        link.addEventListener("click", () => {
-            const sidebar = document.querySelector(".sidebar");
-            const overlay = document.querySelector(".overlay");
-            if (window.innerWidth <= 768) {
-                if (sidebar) sidebar.classList.remove("active");
-                if (overlay) overlay.classList.remove("active");
+    menuBtn.onclick = toggleMenu;
+    overlay.onclick = toggleMenu;
+
+    // Auth monitor
+    let authInitialized = false;
+    onAuthStateChanged(auth, (user) => {
+        if (!authInitialized) {
+            authInitialized = true;
+            if (user) {
+                userTopbar.textContent = user.email;
+                userSidebar.textContent = user.email;
+                loadingEl.style.display = "none";
+                appEl.style.display = "flex";
+            } else {
+                window.location.replace("index.html");
             }
-        });
+        }
     });
 
     // Logout
-    window.logout = async function() {
-        try {
+    document.getElementById('logoutBtn').onclick = async () => {
+        if (confirm('Deseja sair?')) {
             await signOut(auth);
-            window.location.href = "index.html";
-        } catch (error) {
-            console.error("Erro ao sair:", error);
-            alert("Erro ao sair. Tente novamente.");
-        }
-    };
-
-    if (logoutBtn) {
-        logoutBtn.onclick = window.logout;
-    }
-
-    // ✅ VERIFICAÇÃO DE AUTENTICAÇÃO
-    onAuthStateChanged(auth, (user) => {
-        console.log("Quem Somos - Auth:", user ? user.email : "Não logado");
-        
-        if (user) {
-            // Usuário logado - mostra a página
-            if (userEl) {
-                userEl.innerText = "👤 " + user.email;
-            }
-            
-            // Esconde loading e mostra app
-            if (loadingEl) loadingEl.style.display = "none";
-            if (appEl) appEl.style.display = "block";
-            
-        } else {
-            // Usuário NÃO logado - redireciona para login
-            console.log("Usuário não autenticado, redirecionando para login...");
             window.location.replace("index.html");
         }
-    });
+    };
 </script>
 
 </body>
