@@ -103,8 +103,9 @@
     
     setTimeout(forceShow, 3000); // Segurança
 
-// Script para marcar o link ativo automaticamente
-const currentPage = window.location.pathname.split("/").pop();
+// Script para marcar o link ativo automaticamente (Ajustado)
+const path = window.location.pathname.split("/").pop();
+const currentPage = path === "" ? "dashboard.html" : path; // Define dashboard como padrão
 const menuLinks = document.querySelectorAll('.sidebar a');
 
 menuLinks.forEach(link => {
