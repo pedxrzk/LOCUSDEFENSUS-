@@ -5,55 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Limno</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div id="loadingOverlay" style="position:fixed; inset:0; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999;">
+<div id="loadingOverlay" class="loading-overlay">
     <div class="spinner-circular"></div>
-    <p style="margin-top:15px; font-family:sans-serif; color:#143458;">Carregando dashboard...</p>
+    <p style="margin-top:15px;">Carregando dashboard...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
     <nav class="sidebar">
-        <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Logo" class="logo">
-        </div>
-
+        <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
         <a href="dashboard.html">📊 Dashboard</a>
         <a href="controle.html">⚙️ Controle</a>
         <a href="historico.html">🕒 Histórico</a>
         <a href="quem.html">👥 Quem Somos</a>
         <a href="sobre.html">ℹ️ Sobre</a>
-
-        <div style="margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p id="userSidebar" style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px;"></p>
-            <button class="btn-danger" id="logoutBtn">Sair</button>
+        <div style="margin-top: auto; padding: 10px;">
+            <p id="userSidebar" style="font-size: 10px; color: #ccc; margin-bottom: 5px;"></p>
+            <button id="logoutBtn" class="btn-danger">Sair</button>
         </div>
     </nav>
 
     <main class="main">
         <header class="topbar">
-            <div>
-                <h2>Painel Principal</h2>
-                <p class="user-email" id="userTopbar">carregando...</p>
-            </div>
+            <h2>Painel Principal</h2>
+            <p id="userTopbar" style="font-size: 12px; color: #666;"></p>
         </header>
-
         <div class="cards">
-            <article class="card">
-                <h3>Temperatura</h3>
-                <p>25.7°C</p>
-            </article>
-            <article class="card">
-                <h3>Umidade</h3>
-                <p>55%</p>
-            </article>
-            <article class="card">
-                <h3>Pressão</h3>
-                <p>Normal</p>
-            </article>
+            <div class="card"><h3>Temperatura</h3><p>25.7°C</p></div>
+            <div class="card"><h3>Umidade</h3><p>55%</p></div>
+            <div class="card"><h3>Pressão</h3><p>Normal</p></div>
         </div>
     </main>
 </div>
@@ -78,32 +60,24 @@
     const loader = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
 
-    // FUNÇÃO PARA DESTRAVAR A TELA
-    function mostrarSite() {
+    function forceShow() {
         if(loader) loader.style.display = 'none';
         if(appEl) appEl.style.display = 'flex';
     }
 
-    // TRAVA DE SEGURANÇA: Abre em 2 segundos mesmo se o Firebase falhar
-    setTimeout(mostrarSite, 2000);
+    setTimeout(forceShow, 2000); // Trava de segurança
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            const ut = document.getElementById('userTopbar');
-            const us = document.getElementById('userSidebar');
-            if(ut) ut.textContent = user.email;
-            if(us) us.textContent = user.email;
-            
-            mostrarSite();
+            if(document.getElementById('userTopbar')) document.getElementById('userTopbar').textContent = user.email;
+            if(document.getElementById('userSidebar')) document.getElementById('userSidebar').textContent = user.email;
+            forceShow();
         } else {
             window.location.replace("index.html");
         }
     });
 
-    const btnSair = document.getElementById('logoutBtn');
-    if(btnSair) {
-        btnSair.onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
-    }
+    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
 </script>
 </body>
 </html>
