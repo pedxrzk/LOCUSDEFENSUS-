@@ -21,12 +21,12 @@
             <img src="logo.sidebar.png" class="logo">
         </div>
 
-        <a href="dashboard.html">📊 Dashboard</a>
-        <a href="controle.html">⚙️ Controle</a>
-        <a href="historico.html">🕒 Histórico</a>
-        <a href="quem.html">👥 Quem Somos</a>
-        <a href="sobre.html">ℹ️ Sobre</a>
-        
+      <a href="dashboard.html" class="active">📊 Dashboard</a>
+<a href="controle.html">⚙️ Controle</a>
+<a href="historico.html">🕒 Histórico</a>
+<a href="quem.html">👥 Quem Somos</a>
+<a href="sobre.html">ℹ️ Sobre</a>
+
         <div class="user-info-group">
             <p id="userSidebar"></p>
             <div class="divider"></div>
@@ -102,17 +102,6 @@
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
     
     setTimeout(forceShow, 3000); // Segurança
-
-// Script para marcar o link ativo automaticamente (Ajustado)
-const path = window.location.pathname.split("/").pop();
-const currentPage = path === "" ? "dashboard.html" : path; // Define dashboard como padrão
-const menuLinks = document.querySelectorAll('.sidebar a');
-
-menuLinks.forEach(link => {
-    if (link.getAttribute('href') === currentPage) {
-        link.classList.add('active');
-    }
-});
 
 </script>
 </body>
