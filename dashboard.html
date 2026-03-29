@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Limno</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -10,31 +10,29 @@
 
 <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner-circular"></div>
-    <p style="margin-top:15px;">Carregando dashboard...</p>
+    <p>Carregando dashboard...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-    <<nav class="sidebar" id="sidebar">
-    <div class="logo-card">
-        <img src="logo.sidebar.png" class="logo">
-    </div>
+    <nav class="sidebar" id="sidebar">
+        <div class="logo-card">
+            <img src="logo.sidebar.png" class="logo">
+        </div>
 
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="controle.html">⚙️ Controle</a>
-    <a href="historico.html">🕒 Histórico</a>
-    <a href="quem.html">👥 Quem Somos</a>
-    <a href="sobre.html">ℹ️ Sobre</a>
-    
-    <div class="user-info-group">
-        <p id="userSidebar"></p>
-        <div class="divider"></div>
-        <button id="logoutBtn" class="btn-danger">Sair</button>
-    </div>
-</nav>
-
-
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="controle.html">⚙️ Controle</a>
+        <a href="historico.html">🕒 Histórico</a>
+        <a href="quem.html">👥 Quem Somos</a>
+        <a href="sobre.html">ℹ️ Sobre</a>
+        
+        <div class="user-info-group">
+            <p id="userSidebar"></p>
+            <div class="divider"></div>
+            <button id="logoutBtn" class="btn-danger">Sair</button>
+        </div>
+    </nav>
 
     <main class="main">
         <header class="topbar">
@@ -76,7 +74,7 @@
         if(appEl) appEl.style.display = 'flex';
     }
 
-    // Lógica do Menu Lateral
+    // Lógica do Menu Mobile
     if(btnMenu) {
         btnMenu.onclick = (e) => {
             e.stopPropagation();
@@ -84,19 +82,12 @@
         };
     }
 
-    // Fechar menu ao clicar em um link (Mobile)
-    document.querySelectorAll('.sidebar a').forEach(link => {
-        link.onclick = () => sidebar.classList.remove('active');
-    });
-
-    // Fechar ao clicar fora do menu
+    // Fechar ao clicar fora ou em links
     document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768 && !sidebar.contains(e.target) && e.target !== btnMenu) {
+        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
             sidebar.classList.remove('active');
         }
     });
-
-    setTimeout(forceShow, 2000);
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -109,6 +100,8 @@
     });
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
+    
+    setTimeout(forceShow, 3000); // Segurança
 </script>
 </body>
 </html>
