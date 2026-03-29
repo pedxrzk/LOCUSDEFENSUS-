@@ -12,7 +12,7 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-body { background: var(--background); color: var(--text); }
+body { background: var(--background); color: var(--text); overflow-x: hidden; }
 
 .app { display: flex; min-height: 100vh; }
 
@@ -25,6 +25,9 @@ body { background: var(--background); color: var(--text); }
   flex-direction: column;
 }
 
+.logo-card { margin-bottom: 25px; text-align: center; }
+.logo { width: 100%; max-width: 150px; }
+
 .sidebar a {
   color: white;
   text-decoration: none;
@@ -32,9 +35,20 @@ body { background: var(--background); color: var(--text); }
   margin-bottom: 5px;
   display: block;
   border-radius: 8px;
+  transition: 0.2s;
 }
 
 .sidebar a:hover { background: var(--primary-light); }
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+}
 
 .main { flex: 1; padding: 30px; }
 
@@ -42,35 +56,26 @@ body { background: var(--background); color: var(--text); }
   background: white;
   padding: 20px;
   border-radius: var(--radius);
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   box-shadow: var(--shadow);
 }
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
 }
 
 .card {
   background: white;
-  padding: 20px;
+  padding: 25px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border-left: 5px solid var(--primary-light);
 }
 
-/* LOADING */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
+.card h3 { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+.card p { font-size: 24px; font-weight: bold; color: var(--primary); }
 
 .spinner-circular {
   width: 40px;
