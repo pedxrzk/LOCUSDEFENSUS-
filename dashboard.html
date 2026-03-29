@@ -88,17 +88,6 @@
 </script>
 
 <script type="module">
-    // FORÇAR SAÍDA DO LOADING (ADICIONE ISSO AQUI)
-    setTimeout(() => {
-        const loading = document.getElementById('loadingOverlay');
-        if (loading) loading.classList.add('hidden');
-        const appEl = document.getElementById('app');
-        if (appEl) appEl.style.display = "flex";
-        console.log("Loading removido por segurança.");
-    }, 2000);
-
-    // ... restante do seu código Firebase atual ...
-
     import { initializeApp } from "firebase/app";
     import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
 
@@ -116,70 +105,51 @@
     const auth = getAuth(app);
     setPersistence(auth, browserLocalPersistence);
 
-    // Seleção de elementos com verificação
+    // Seleção de elementos com segurança
     const loadingOverlay = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
     const userTopbar = document.getElementById('userTopbar');
     const userSidebar = document.getElementById('userSidebar');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const menuBtn = document.getElementById('menuBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
 
-    // Menu Toggle
-    function toggleMenu() {
-        if (sidebar && overlay) {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+    // --- TRAVA DE SEGURANÇA (Obrigatório para destravar o loading) ---
+    setTimeout(() => {
+        if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+            loadingOverlay.classList.add('hidden');
+            if (appEl) appEl.style.display = "flex";
+            console.log("Sistema destravado por tempo limite.");
         }
-    }
+    }, 2000); 
 
-    if (menuBtn) menuBtn.onclick = toggleMenu;
-    if (overlay) overlay.onclick = toggleMenu;
-
-    // Lógica de Autenticação (A prova de falhas)
     let authInitialized = false;
-
     onAuthStateChanged(auth, (user) => {
         if (!authInitialized) {
             authInitialized = true;
             if (user) {
-                // Preenche os campos de e-mail apenas se existirem
+                // Só altera o texto se os elementos existirem
                 if (userTopbar) userTopbar.textContent = user.email;
                 if (userSidebar) userSidebar.textContent = user.email;
                 
-                // Remove o loading após 1s
-                setTimeout(() => {
-                    if (loadingOverlay) loadingOverlay.classList.add('hidden');
-                    if (appEl) appEl.style.display = "flex";          
-                }, 1000); 
-
+                // Esconde o loading
+                if (loadingOverlay) loadingOverlay.classList.add('hidden');
+                if (appEl) appEl.style.display = "flex"; 
             } else {
                 window.location.replace("index.html");
             }
         }
     });
 
-    // Logout
+    // Lógica do botão de Logout (com verificação se ele existe)
+    const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.onclick = async () => {
-            if (confirm('Deseja realmente sair?')) {
+            if (confirm('Deseja sair?')) {
                 await signOut(auth);
                 window.location.replace("index.html");
             }
         };
     }
-
-    // Erro na Logo
-    const logoImg = document.querySelector('.logo');
-    if (logoImg) {
-        logoImg.onerror = function() {
-            this.style.display = 'none';
-            const fallback = document.getElementById('logoFallback');
-            if (fallback) fallback.style.display = 'block';
-        };
-    }
 </script>
+
 
 </body>
 </html>
