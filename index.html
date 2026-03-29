@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+        url("background.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    width: 90%;        /* muda isso */
+    max-width: 380px;  /* adiciona isso */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.logo {
+    width: 140px;
+    margin-bottom: 1px;
+    border-radius: 100%;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+}
+
+h2 {
+    color: white;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none; /* remove a borda */
+    outline: none;
+    box-sizing: border-box;
+    font-size: 14px;
+    transition: all 0.25s ease;
+}
+
+/* efeito foco SEM aumentar tamanho */
+input:focus {
+    box-shadow: 0 0 0 2px #4facfe;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #143458;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #1b5e20;
+}
+
+.google-btn {
+    margin-top: 10px;
+    background: #db4437;
+}
+
+.link {
+    margin-top: 10px;
+    color: #ddd;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.error {
+    color: #ff6b6b;
+    margin-top: 10px;
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+<img src="logo.png" class="logo">
+
+<h2 id="titulo">Acesse o sistema de monitoramento remoto</h2>
+
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="senha" placeholder="Senha">
+
+<button id="btnPrincipal" onclick="acao()">Entrar</button>
+
+<button class="google-btn" onclick="loginGoogle()">
+  Entrar com Google
+</button>
+
+<p class="link" onclick="esqueciSenha()">Esqueci minha senha</p>
+<p class="link" id="toggleLink" onclick="trocarModo()">Não tem conta? Cadastre-se</p>
+
+<p class="error" id="erro"></p>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInWithPopup,
+  GoogleAuthProvider,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
+    authDomain: "coleta-7fecd.firebaseapp.com",
+    databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
+    projectId: "coleta-7fecd",
+    storageBucket: "coleta-7fecd.firebasestorage.app",
+    messagingSenderId: "130929270335",
+    appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+let modo = "login";
+
+/* TROCAR MODO */
+window.trocarModo = function () {
+    let titulo = document.getElementById("titulo");
+    let botao = document.getElementById("btnPrincipal");
+    let link = document.getElementById("toggleLink");
+    let erro = document.getElementById("erro");
+
+    erro.style.display = "none";
+
+    if (modo === "login") {
+        modo = "cadastro";
+        titulo.innerText = "Cadastro";
+        botao.innerText = "Cadastrar";
+        link.innerText = "Já tem conta? Entrar";
+    } else {
+        modo = "login";
+        titulo.innerText = "Acesse o sistema de monitoramento remoto";
+        botao.innerText = "Entrar";
+        link.innerText = "Não tem conta? Cadastre-se";
+    }
+};
+
+/* LOGIN / CADASTRO */
+window.acao = function () {
+    let email = document.getElementById("email").value;
+    let senha = document.getElementById("senha").value;
+    let erro = document.getElementById("erro");
+
+    erro.style.display = "none";
+
+    if (!email || !senha) {
+        erro.innerText = "Preencha todos os campos";
+        erro.style.display = "block";
+        return;
+    }
+
+    if (modo === "cadastro") {
+        createUserWithEmailAndPassword(auth, email, senha)
+            .then(() => {
+                alert("Conta criada com sucesso 🚀");
+                trocarModo();
+            })
+            .catch((error) => {
+                erro.innerText = traduzirErro(error.code);
+                erro.style.display = "block";
+            });
+
+    } else {
+        // 🔥 CORREÇÃO AQUI
+        setPersistence(auth, browserLocalPersistence)
+            .then(() => {
+                return signInWithEmailAndPassword(auth, email, senha);
+            })
+            .then(() => {
+                window.location.href = "dashboard.html";
+            })
+            .catch((error) => {
+                erro.innerText = traduzirErro(error.code);
+                erro.style.display = "block";
+            });
+    }
+};
+/* ESQUECI SENHA */
+window.esqueciSenha = function () {
+    let email = document.getElementById("email").value;
+    let erro = document.getElementById("erro");
+
+    erro.style.display = "none";
+
+    if (!email) {
+        erro.innerText = "Digite seu email primeiro";
+        erro.style.display = "block";
+        return;
+    }
+
+    sendPasswordResetEmail(auth, email)
+        .then(() => alert("Email de recuperação enviado 🚀"))
+        .catch((error) => {
+            erro.innerText = traduzirErro(error.code);
+            erro.style.display = "block";
+        });
+};
+
+/* GOOGLE LOGIN */
+window.loginGoogle = function () {
+    setPersistence(auth, browserLocalPersistence)
+        .then(() => {
+            return signInWithPopup(auth, provider);
+        })
+        .then(() => {
+            window.location.href = "./dashboard.html";
+        })
+        .catch((error) => {
+            let erro = document.getElementById("erro");
+            erro.innerText = error.message;
+            erro.style.display = "block";
+        });
+};
+
+/* ERROS */
+function traduzirErro(code) {
+    switch (code) {
+        case "auth/email-already-in-use":
+            return "Esse email já está em uso";
+        case "auth/invalid-email":
+            return "Email inválido";
+        case "auth/weak-password":
+            return "Senha muito fraca (mínimo 6 caracteres)";
+        case "auth/user-not-found":
+            return "Usuário não encontrado";
+        case "auth/wrong-password":
+            return "Senha incorreta";
+        default:
+            return "Erro: " + code;
+    }
+}
+</script>
+
+</body>
+</html>
