@@ -90,6 +90,18 @@
     });
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
+
+// Script para marcar o link ativo automaticamente (Ajustado)
+const path = window.location.pathname.split("/").pop();
+const currentPage = path === "" ? "dashboard.html" : path; // Define dashboard como padrão
+const menuLinks = document.querySelectorAll('.sidebar a');
+
+menuLinks.forEach(link => {
+    if (link.getAttribute('href') === currentPage) {
+        link.classList.add('active');
+    }
+});
+
 </script>
 </body>
 </html>
