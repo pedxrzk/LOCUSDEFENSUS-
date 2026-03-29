@@ -7,7 +7,7 @@
   --radius: 12px;
 }
 
-/* SIDEBAR - Estrutura Principal */
+/* --- SIDEBAR CORRIGIDA --- */
 .sidebar {
   width: 260px;
   background: var(--primary);
@@ -19,14 +19,14 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition: transform 0.3s ease;
 }
 
-/* LOGO - Restaurada conforme o seu print */
+/* LOGO - Ajustada para o tamanho da sua imagem */
 .logo-card {
-  border-radius: 15px;
-  padding: 15px;
-  margin-bottom: 25px;
-  background: rgba(255, 255, 255, 0.05); /* Leve destaque para a logo */
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -34,11 +34,12 @@
 
 .logo {
   width: 100%;
-  max-width: 160px;
+  max-width: 180px; /* Ajuste conforme o tamanho real da sua logo */
   height: auto;
+  object-fit: contain;
 }
 
-/* LINKS DE NAVEGAÇÃO */
+/* LINKS DO MENU */
 .sidebar a {
   color: white;
   text-decoration: none;
@@ -51,9 +52,10 @@
   transition: 0.2s;
 }
 
+/* Espaçamento entre Ícone e Texto */
 .sidebar a i {
-  width: 25px; /* Espaço fixo para alinhar os ícones */
-  margin-right: 10px;
+  width: 25px; 
+  margin-right: 12px;
   text-align: center;
   font-size: 16px;
 }
@@ -63,25 +65,34 @@
   background: var(--primary-light);
 }
 
-/* BOTÃO SAIR - No final da sidebar como no print */
+/* RODAPÉ (E-mail e Sair) */
+.sidebar-footer {
+  margin-top: auto; /* Empurra tudo para o fim da tela */
+  padding: 15px 5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#userSidebar {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+  word-break: break-all;
+  text-align: center;
+}
+
 .btn-danger {
-  margin-top: auto; /* Empurra o botão para o final */
-  margin-bottom: 10px;
   padding: 12px;
   border-radius: 8px;
-  background: #e11d48;
+  background: var(--danger);
   color: white;
   border: none;
   font-weight: 600;
   cursor: pointer;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-}
-
-.btn-danger i {
-  font-size: 14px;
 }
 
 /* INFORMAÇÕES DO USUÁRIO (E-mail acima do botão Sair) */
