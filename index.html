@@ -4,151 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login - Locus Defensus</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
     <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            font-family: 'Inter', Arial, sans-serif;
-            background: linear-gradient(rgba(20, 52, 88, 0.7), rgba(20, 52, 88, 0.8)), url("background.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 40px 30px;
-            box-sizing: border-box;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 380px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .logo {
-            width: 140px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-        }
-
-        h2 {
-            color: white;
-            font-size: 1.1rem;
-            margin-bottom: 25px;
-            font-weight: 500;
-            line-height: 1.4;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            outline: none;
-            box-sizing: border-box;
-            font-size: 14px;
-            background: rgba(255, 255, 255, 0.95);
-            transition: 0.3s;
-            text-align: center; /* Centraliza o número do protótipo */
-        }
-
-        input:focus {
-            border-color: #143458;
-            background: #ffffff;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: #143458;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        button:hover {
-            background: #1b4a75;
-            transform: translateY(-1px);
-        }
-
-        button:disabled {
-            background: #0d233a;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-
-        .spinner {
-            display: none;
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .link-container {
-            margin-top: 25px;
-        }
-
-        .link {
-            margin: 12px 0;
-            color: rgba(255, 255, 255, 0.9);
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            display: block;
-            transition: 0.2s;
-        }
-
-        .link:hover {
-            color: #ffffff;
-            text-decoration: underline;
-        }
-
-        .error {
-            color: #ff6b6b;
-            margin-top: 15px;
-            font-size: 13px;
-            display: none;
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 10px;
-            border-left: 4px solid #ff6b6b;
-        }
+        body { margin: 0; height: 100vh; font-family: 'Inter', Arial, sans-serif; background: linear-gradient(rgba(20, 52, 88, 0.7), rgba(20, 52, 88, 0.8)), url("background.jpg"); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); padding: 40px 30px; border-radius: 20px; width: 90%; max-width: 380px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); color: white; }
+        .logo { width: 140px; margin-bottom: 20px; }
+        h2 { font-size: 1.1rem; margin-bottom: 25px; font-weight: 500; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: none; outline: none; box-sizing: border-box; font-size: 14px; background: rgba(255, 255, 255, 0.95); text-align: center; color: #333; }
+        button { width: 100%; padding: 14px; background: #143458; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 15px; transition: 0.3s; }
+        button:hover { background: #1b4a75; }
+        .link { margin-top: 15px; color: rgba(255, 255, 255, 0.9); cursor: pointer; font-size: 13px; display: block; text-decoration: none; }
+        .link:hover { color: white; text-decoration: underline; }
+        .error { color: #ff6b6b; margin-top: 15px; font-size: 13px; display: none; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="login-box">
     <img src="logo.png" class="logo">
-    <h2 id="titulo">Identificação do Protótipo</h2>
+    <h2 id="titulo">Acesso ao Protótipo</h2>
 
-    <input type="text" id="serialNumber" placeholder="Nº de Série (5 dígitos)">
-    <input type="password" id="senha" placeholder="Senha de Acesso">
+    <div id="authFields">
+        <input type="text" id="serialNumber" placeholder="Nº de Série (ex: 00001)">
+        <input type="email" id="emailUsuario" placeholder="Seu E-mail de Segurança">
+    </div>
 
-    <button id="btnPrincipal" onclick="acao()">
-        <i id="loaderIcon" class="fas fa-circle-notch fa-spin spinner"></i>
-        <span id="btnText">Aceder Protótipo</span>
-    </button>
+    <button id="btnPrincipal" onclick="acao()">Entrar no Painel</button>
 
     <div class="link-container">
         <p class="link" id="toggleLink" onclick="trocarModo()">Novo dispositivo? Registrar</p>
+        <p class="link" id="forgotLink" onclick="recuperar()">Esqueci meu e-mail de acesso</p>
     </div>
 
     <p class="error" id="erro"></p>
@@ -156,10 +41,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  setPersistence, browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
@@ -173,95 +56,77 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
-setPersistence(auth, browserLocalPersistence).catch(e => console.error(e));
+setPersistence(auth, browserLocalPersistence);
 
 let modo = "login";
 
-function setButtonLoading(isLoading) {
-    const btn = document.getElementById("btnPrincipal");
-    const icon = document.getElementById("loaderIcon");
-    const text = document.getElementById("btnText");
-
-    if (isLoading) {
-        btn.disabled = true;
-        icon.style.display = "inline-block";
-        text.innerText = "A validar...";
-    } else {
-        btn.disabled = false;
-        icon.style.display = "none";
-        text.innerText = modo === "login" ? "Aceder Protótipo" : "Registar Serial";
-    }
-}
-
-window.trocarModo = function () {
-    let titulo = document.getElementById("titulo");
-    let link = document.getElementById("toggleLink");
-    let erro = document.getElementById("erro");
-    erro.style.display = "none";
-
-    if (modo === "login") {
-        modo = "cadastro";
-        titulo.innerText = "Registar novo Serial";
-        link.innerText = "Já tem acesso? Entrar";
-    } else {
-        modo = "login";
-        titulo.innerText = "Identificação do Protótipo";
-        link.innerText = "Novo dispositivo? Registrar";
-    }
-    setButtonLoading(false);
+// TROCAR ENTRE LOGIN E CADASTRO
+window.trocarModo = function() {
+    modo = (modo === "login") ? "cadastro" : "login";
+    document.getElementById("titulo").innerText = (modo === "cadastro") ? "Registar novo Protótipo" : "Acesso ao Protótipo";
+    document.getElementById("btnPrincipal").innerText = (modo === "cadastro") ? "Registar e Entrar" : "Entrar no Painel";
+    document.getElementById("toggleLink").innerText = (modo === "cadastro") ? "Já tem acesso? Entrar" : "Novo dispositivo? Registrar";
 };
 
-window.acao = function () {
-    let serial = document.getElementById("serialNumber").value.trim();
-    let senha = document.getElementById("senha").value;
-    let erro = document.getElementById("erro");
+// AÇÃO DE ENTRAR / REGISTRAR
+window.acao = function() {
+    const serial = document.getElementById("serialNumber").value.trim().toLowerCase();
+    const email = document.getElementById("emailUsuario").value.trim();
+    const erro = document.getElementById("erro");
+    
+    // O E-MAIL vira a SENHA secreta. O LOGIN vira o SERIAL@locus.com
+    const loginFirebase = `${serial}@locus.com`;
+    const senhaInvisivel = email; 
 
     erro.style.display = "none";
 
-    if (!serial || !senha) {
-        erro.innerText = "Preencha o Serial e a Senha";
+    if (!serial || !email) {
+        erro.innerText = "Por favor, preencha o Serial e o E-mail.";
         erro.style.display = "block";
         return;
     }
 
-    // AQUI ACONTECE A MÁGICA:
-    // Pega o "00001" e envia para o Firebase como "00001@locus.com"
-    const identificadorFirebase = `${serial.toLowerCase()}@locus.com`;
-
-    setButtonLoading(true);
-
     if (modo === "cadastro") {
-        createUserWithEmailAndPassword(auth, identificadorFirebase, senha)
+        // No cadastro, usamos o e-mail como senha
+        createUserWithEmailAndPassword(auth, loginFirebase, senhaInvisivel)
             .then(() => {
-                alert("Serial " + serial + " registado!");
+                // Salva o vínculo no banco para referência futura
+                set(ref(db, 'usuarios/' + serial), { emailDono: email });
                 window.location.href = "dashboard.html";
             })
-            .catch((error) => {
-                setButtonLoading(false);
-                erro.innerText = "Erro: " + traduzirErro(error.code);
+            .catch(e => {
+                erro.innerText = "Erro ao registrar: Verifique se o Serial já existe ou se o e-mail é válido.";
                 erro.style.display = "block";
             });
     } else {
-        signInWithEmailAndPassword(auth, identificadorFirebase, senha)
+        // No login, tentamos entrar com o e-mail como senha
+        signInWithEmailAndPassword(auth, loginFirebase, senhaInvisivel)
             .then(() => {
                 window.location.href = "dashboard.html";
             })
-            .catch((error) => {
-                setButtonLoading(false);
-                erro.innerText = "Nº de Série ou senha incorretos.";
+            .catch(() => {
+                erro.innerText = "Acesso negado. Verifique o Serial e o E-mail digitado.";
                 erro.style.display = "block";
             });
     }
 };
 
-function traduzirErro(code) {
-    switch (code) {
-        case "auth/email-already-in-use": return "Este Serial já está em uso.";
-        case "auth/weak-password": return "A senha deve ter pelo menos 6 caracteres.";
-        default: return "Erro ao processar acesso.";
+// RECUPERAÇÃO (Envia o reset de senha para o e-mail real)
+window.recuperar = function() {
+    const email = document.getElementById("emailUsuario").value.trim();
+    if (!email) {
+        alert("Digite o seu e-mail no campo para receber as instruções de recuperação.");
+        return;
     }
-}
+    
+    // Como a senha É o e-mail, se ele quiser trocar a senha via link, 
+    // o Firebase enviará para o e-mail real dele.
+    sendPasswordResetEmail(auth, email)
+        .then(() => alert("Se este e-mail estiver vinculado a um protótipo, você receberá um link de recuperação em breve."))
+        .catch(e => alert("Erro ao solicitar: " + e.message));
+};
 </script>
 </body>
 </html>
