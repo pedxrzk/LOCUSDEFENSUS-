@@ -23,7 +23,7 @@
         
         .tech-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
@@ -50,7 +50,7 @@
 
 <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner-circular"></div>
-    <p id="loadingText">Carregando sistema...</p>
+    <p id="loadingText">Carregando informações...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
@@ -68,14 +68,13 @@
         <a href="sobre.html" class="active">ℹ️ Sobre</a>
 
         <div style="margin-top: 20px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-    <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 10px;" id="userSidebar">
-        usuario@email.com
-    </p>
-    <button class="btn-danger" id="logoutBtn" style="width: 100%;">
-        🚪 Sair
-    </button>
-</div>
-
+            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
+                carregando...
+            </p>
+            <button class="btn-danger" id="logoutBtn" style="width: 100%;">
+                🚪 Sair
+            </button>
+        </div>
     </nav>
 
     <div class="overlay" id="overlay"></div>
@@ -153,7 +152,8 @@
     const auth = getAuth(app);
     setPersistence(auth, browserLocalPersistence);
 
-    const loadingEl = document.getElementById('loading');
+    // Selecionando IDs atualizados
+    const loadingOverlay = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
     const userTopbar = document.getElementById('userTopbar');
     const userSidebar = document.getElementById('userSidebar');
@@ -172,7 +172,7 @@
     menuBtn.onclick = toggleMenu;
     overlay.onclick = toggleMenu;
 
-    // Auth monitor
+    // Lógica de Autenticação com Efeito de Loading (1.5s)
     let authInitialized = false;
     onAuthStateChanged(auth, (user) => {
         if (!authInitialized) {
@@ -180,8 +180,13 @@
             if (user) {
                 userTopbar.textContent = user.email;
                 userSidebar.textContent = user.email;
-                loadingEl.style.display = "none";
-                appEl.style.display = "flex";
+                
+                // Delay para bater com o vídeo enviado
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden'); // Fade-out suave via CSS
+                    appEl.style.display = "flex"; 
+                }, 1500);
+
             } else {
                 window.location.replace("index.html");
             }
@@ -190,7 +195,7 @@
 
     // Logout
     document.getElementById('logoutBtn').onclick = async () => {
-        if (confirm('Deseja sair?')) {
+        if (confirm('Deseja sair do sistema?')) {
             await signOut(auth);
             window.location.replace("index.html");
         }
