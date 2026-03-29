@@ -7,69 +7,70 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* Estilos específicos para a seção detalhada da equipe */
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+        }
+
+        .intro-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding-bottom: 20px;
+        }
+
+        .intro-text h2 { color: #143458; margin: 0; font-size: 28px; }
+        .intro-text p { color: #555; max-width: 600px; margin-top: 10px; line-height: 1.5; }
+        
+        .badge-info { text-align: right; color: #888; font-size: 13px; }
+
         .equipe-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
-            padding: 10px;
         }
 
         .card-membro {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            padding: 25px;
-            background: #fff;
+            background: white;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: 0.3s;
         }
 
-        .card-membro:hover {
-            transform: translateY(-5px);
-        }
+        .card-membro:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        .avatar-info {
+        .avatar {
+            width: 60px;
+            height: 60px;
             background: #f0f4f8;
-            color: #143458; /* Sua cor principal */
-            width: 50px;
-            height: 50px;
+            color: #143458;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
             flex-shrink: 0;
         }
 
-        .membro-detalhes h3 {
-            margin: 0;
-            font-size: 18px;
-            color: #333;
-        }
+        .info-membro b { display: block; font-size: 17px; color: #333; }
+        .info-membro span { display: block; font-size: 11px; color: #143458; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .info-membro p { font-size: 13px; color: #666; margin: 0; line-height: 1.4; }
 
-        .membro-cargo {
-            font-size: 12px;
-            color: var(--primary-light);
-            font-weight: 600;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        .membro-desc {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .projeto-intro {
-            background: #fff;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border-left: 5px solid #143458;
+        @media (max-width: 768px) {
+            .intro-section { flex-direction: column; }
+            .badge-info { text-align: left; margin-top: 15px; }
+            .equipe-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -98,41 +99,44 @@
     </nav>
 
     <main class="main">
-        <header class="topbar">
-            <h2>Nossa Equipe</h2>
-            <p id="userTopbar" style="font-size: 12px; color: #666;"></p>
-        </header>
-
-        <div class="projeto-intro">
-            <h3>Sobre o Projeto</h3>
-            <p style="color: #666; font-size: 14px;">Estudantes dedicados ao desenvolvimento de soluções tecnológicas para monitoramento remoto. Integramos hardware, software e design para criar o Locus Defensus.</p>
-        </div>
-
-        <div class="equipe-grid">
-            <div class="card-membro">
-                <div class="avatar-info">PP</div>
-                <div class="membro-detalhes">
-                    <p class="membro-cargo">Hardware / Firmware</p>
-                    <h3>Pedro Paulo da Silva</h3>
-                    <p class="membro-desc">Responsável pelo desenvolvimento com ESP32 e integração dos sensores de monitoramento.</p>
+        <div class="content-wrapper">
+            <header class="intro-section">
+                <div class="intro-text">
+                    <h2>Quem Somos</h2>
+                    <p>Estudantes focados em inovação e segurança para o monitoramento de materiais hospitalares.</p>
                 </div>
-            </div>
-
-            <div class="card-membro">
-                <div class="avatar-info">YS</div>
-                <div class="membro-detalhes">
-                    <p class="membro-cargo">Testes / Validação</p>
-                    <h3>Yasmin Santos</h3>
-                    <p class="membro-desc">Coordenou os testes de leitura dos sensores e a validação técnica de todo o projeto.</p>
+                <div class="badge-info">
+                    <p>FMM — 3º EM</p>
+                    <p>Projeto Locus Defensus</p>
                 </div>
-            </div>
+            </header>
 
-            <div class="card-membro">
-                <div class="avatar-info">KL</div>
-                <div class="membro-detalhes">
-                    <p class="membro-cargo">Documentação / Design</p>
-                    <h3>Kelen Silva</h3>
-                    <p class="membro-desc">Desenvolveu a identidade visual do painel e toda a documentação técnica necessária.</p>
+            <div class="equipe-grid">
+                <div class="card-membro">
+                    <div class="avatar">PP</div>
+                    <div class="info-membro">
+                        <span>Hardware / Firmware</span>
+                        <b>Pedro Paulo da Silva e Silva</b>
+                        <p>Responsável pelo ESP32, sensores e comunicação Firebase.</p>
+                    </div>
+                </div>
+
+                <div class="card-membro">
+                    <div class="avatar">KS</div>
+                    <div class="info-membro">
+                        <span>Dados / Frontend</span>
+                        <b>Kelen Santos</b>
+                        <p>Responsável pela modelagem de dados e concepção do painel.</p>
+                    </div>
+                </div>
+
+                <div class="card-membro">
+                    <div class="avatar">YF</div>
+                    <div class="info-membro">
+                        <span>Testes / Documentação</span>
+                        <b>Yasmin Ferreira</b>
+                        <p>Coordenação dos testes de leitura e validação do projeto.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -143,7 +147,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    // Sua configuração do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
         authDomain: "coleta-7fecd.firebaseapp.com",
@@ -166,7 +169,6 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('userSidebar').textContent = user.email;
-            document.getElementById('userTopbar').textContent = user.email;
             document.getElementById('loadingOverlay').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
         } else {
