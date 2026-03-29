@@ -17,21 +17,24 @@
 <div class="app" id="app" style="display: none;">
     <nav class="sidebar" id="sidebar">
         <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Logo" class="logo">
+            <img src="logo.sidebar.png" alt="Limno Logo" class="logo">
         </div>
 
         <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-        <a href="controle.html"><i class="fa-solid fa-sliders"></i> Controle</a>
+        <a href="controle.html" class="active"><i class="fa-solid fa-sliders"></i> Controle</a>
         <a href="historico.html"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</a>
         <a href="quem.html"><i class="fa-solid fa-users"></i> Quem Somos</a>
         <a href="sobre.html"><i class="fa-solid fa-circle-info"></i> Sobre</a>
 
-        <div style="margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p id="userSidebar" style="font-size: 11px; color: #ccc; margin-bottom: 10px;"></p>
-            <button class="btn-danger" id="logoutBtn">Sair</button>
+        <div style="margin-top: 30px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
+                carregando...
+            </p>
+            <button class="btn-danger" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair
+            </button>
         </div>
     </nav>
-
     <main class="main">
         <header class="topbar">
             <div>
