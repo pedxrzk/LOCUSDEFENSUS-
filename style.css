@@ -85,15 +85,16 @@ html, body {
 
 /* BOTÃO SAIR */
 .btn-danger {
-  margin-top: auto; /* Empurra o botão para o final da sidebar */
+  margin-top: 20px; /* Altere de 'auto' para um valor fixo, como 20px */
   padding: 12px;
   border-radius: 10px;
-  border: none;
   background: var(--danger);
   color: white;
+  border: none;
   cursor: pointer;
-  transition: 0.2s;
+  width: 100%;
 }
+
 
 .btn-danger:hover {
   background: var(--danger-dark);
