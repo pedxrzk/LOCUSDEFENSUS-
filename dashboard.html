@@ -70,12 +70,25 @@
         if(appEl) appEl.style.display = 'flex';
     }
 
-    // Lógica do Botão de Menu Mobile
+    // Lógica do Menu Lateral
     if(btnMenu) {
-        btnMenu.onclick = () => {
+        btnMenu.onclick = (e) => {
+            e.stopPropagation();
             sidebar.classList.toggle('active');
         };
     }
+
+    // Fechar menu ao clicar em um link (Mobile)
+    document.querySelectorAll('.sidebar a').forEach(link => {
+        link.onclick = () => sidebar.classList.remove('active');
+    });
+
+    // Fechar ao clicar fora do menu
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768 && !sidebar.contains(e.target) && e.target !== btnMenu) {
+            sidebar.classList.remove('active');
+        }
+    });
 
     setTimeout(forceShow, 2000);
 
