@@ -3,9 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sobre - Limno</title>
+    <title>Sobre - Locus Defensus</title>
     <link rel="stylesheet" href="style.css">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Estilização seguindo a referência AirLink com o Design Locus Defensus */
+        .content-container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #f0f4f8;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .project-header h2 { color: #143458; margin: 0; font-size: 26px; }
+        .project-header p { color: #666; margin-top: 5px; line-height: 1.6; max-width: 80% }
+
+        .tech-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .spec-item h4 {
+            color: #143458;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border-left: 3px solid #143458;
+            padding-left: 10px;
+        }
+
+        .spec-list { list-style: none; padding: 0; }
+        .spec-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .spec-list li b { color: #333; }
+        .spec-list li span { color: #143458; font-weight: 600; }
+
+        .objectives-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .objectives-box ul { padding-left: 20px; color: #555; font-size: 14px; }
+        .objectives-box li { margin-bottom: 10px; }
+
+        @media (max-width: 768px) {
+            .tech-specs { grid-template-columns: 1fr; }
+            .project-header { flex-direction: column; }
+            .project-header p { max-width: 100%; }
+        }
+    </style>
 </head>
 <body>
 
@@ -17,35 +85,66 @@
 <div class="app" id="app" style="display: none;">
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-   <nav class="sidebar" id="sidebar">
-    <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
-    <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
-    <a href="controle.html"><i class="fas fa-sliders"></i> Controle</a>
-    <a href="historico.html"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
-    <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
-    <a href="sobre.html" class="active"><i class="fas fa-circle-info"></i> Sobre</a>
-    <div class="user-info-group">
-        <p id="userSidebar"></p>
-        <div class="divider"></div>
-        <button id="logoutBtn" class="btn-danger">Sair</button>
-    </div>
-</nav>
+    <nav class="sidebar" id="sidebar">
+        <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="controle.html"><i class="fas fa-sliders"></i> Controle</a>
+        <a href="historico.html"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
+        <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
+        <a href="sobre.html" class="active"><i class="fas fa-circle-info"></i> Sobre</a>
+        <div class="user-info-group">
+            <p id="userSidebar"></p>
+            <div class="divider"></div>
+            <button id="logoutBtn" class="btn-danger">Sair</button>
+        </div>
+    </nav>
 
     <main class="main">
         <header class="topbar">
             <h2>Sobre o Projeto</h2>
             <p id="userTopbar" style="font-size: 12px; color: #666;"></p>
         </header>
-        <div class="cards">
-            <div class="card" style="grid-column: 1 / -1;">
-                <h3>📡 Locus Defensus</h3>
-                <p style="font-size: 18px; margin-top: 10px; color: var(--text);">
-                    O Limno é um sistema de monitoramento IoT desenvolvido com <strong>ESP32</strong> e 
-                    <strong>Firebase Realtime Database</strong>. 
-                </p>
-                <p style="margin-top: 10px; color: var(--muted);">
-                    Seu objetivo é coletar dados ambientais e fornecer controle em tempo real através deste dashboard web, 
-                    garantindo acessibilidade e segurança dos dados.
+
+        <div class="content-container">
+            <div class="project-header">
+                <div>
+                    <h2>Locus Defensus — Monitoramento IoT</h2>
+                    <p>Solução inteligente baseada em ESP32 que coleta temperatura, umidade e pressão atmosférica, transmitindo dados em tempo real para o Firebase Realtime Database.</p>
+                </div>
+                <div style="text-align: right; color: #999; font-size: 12px;">
+                    <b>ESP32 DevKit</b><br>
+                    <b>DHT22 / BMP280</b><br>
+                    <b>V1.0.0</b>
+                </div>
+            </div>
+
+            <div class="tech-specs">
+                <div class="spec-item">
+                    <h4>Especificações Técnicas</h4>
+                    <ul class="spec-list">
+                        <li><b>Microcontrolador:</b> <span>ESP32-WROOM-32</span></li>
+                        <li><b>Transmissão:</b> <span>Wi-Fi 2.4GHz</span></li>
+                        <li><b>Armazenamento:</b> <span>Firebase NoSQL</span></li>
+                        <li><b>Dashboard:</b> <span>HTML5 / CSS3 / JS</span></li>
+                    </ul>
+                </div>
+
+                <div class="spec-item">
+                    <h4>Objetivos do Sistema</h4>
+                    <div class="objectives-box">
+                        <ul>
+                            <li>Fornecer monitoramento remoto preciso e confiável em tempo real.</li>
+                            <li>Garantir visualização rápida dos dados em qualquer dispositivo mobile.</li>
+                            <li>Servir como base para futuras expansões de automação hospitalar.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spec-item" style="margin-top: 30px;">
+                <h4>Segurança e Backend</h4>
+                <p style="font-size: 14px; color: #666; line-height: 1.6;">
+                    O sistema utiliza autenticação segura via Firebase Auth, garantindo que apenas usuários autorizados tenham acesso aos controles do Buzzer e LED. O backend processa as requisições com baixa latência, ideal para ambientes que exigem resposta imediata.
                 </p>
             </div>
         </div>
@@ -74,9 +173,6 @@
     if(btnMenu) {
         btnMenu.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); };
     }
-    document.addEventListener('click', (e) => {
-        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) sidebar.classList.remove('active');
-    });
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -90,8 +186,6 @@
     });
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
-
 </script>
 </body>
 </html>
-
