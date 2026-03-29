@@ -30,7 +30,7 @@ html, body {
 
 /* LAYOUT PRINCIPAL */
 .app {
-  display: flex; /* Alinha sidebar e main lado a lado no desktop */
+  display: flex;
   min-height: 100vh;
   width: 100%;
 }
@@ -38,33 +38,17 @@ html, body {
 /* SIDEBAR */
 .sidebar {
   width: 260px;
-  flex-shrink: 0; /* Impede a sidebar de "esmagar" */
+  flex-shrink: 0;
   background: var(--primary);
   color: white;
   padding: 20px;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  position: sticky; /* Mantém a sidebar fixa ao rolar a página no desktop */
+  position: sticky;
   top: 0;
   transition: transform 0.3s ease;
   z-index: 1000;
-}
-
-/* LINKS */
-.sidebar a {
-  color: white;
-  text-decoration: none;
-  padding: 12px;
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  display: block;
-  transition: 0.2s;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-  background: var(--primary-light);
 }
 
 /* LOGO */
@@ -83,9 +67,34 @@ html, body {
   max-width: 180px;
 }
 
+/* LINKS DA SIDEBAR E ÍCONES */
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  padding: 12px;
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  display: flex; /* Mudado para flex para alinhar ícones */
+  align-items: center;
+  transition: 0.2s;
+}
+
+.sidebar a i {
+  width: 25px; /* Espaço fixo para os ícones do Font Awesome */
+  margin-right: 12px;
+  font-size: 18px;
+  text-align: center;
+  color: white;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: var(--primary-light);
+}
+
 /* BOTÃO SAIR */
 .btn-danger {
-  margin-top: 20px; /* Altere de 'auto' para um valor fixo, como 20px */
+  margin-top: 20px;
   padding: 12px;
   border-radius: 10px;
   background: var(--danger);
@@ -93,8 +102,15 @@ html, body {
   border: none;
   cursor: pointer;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
 }
 
+.btn-danger i {
+  margin-right: 10px;
+}
 
 .btn-danger:hover {
   background: var(--danger-dark);
@@ -102,27 +118,22 @@ html, body {
 
 /* CONTEÚDO PRINCIPAL */
 .main {
-  flex: 1; /* Ocupa todo o espaço restante do flexbox */
+  flex: 1;
   padding: 30px;
-  min-width: 0; /* Evita quebra de layout com conteúdos largos */
+  min-width: 0;
   overflow-y: auto;
 }
 
 /* TOPBAR */
 .topbar {
   display: flex;
-  justify-content: space-between; /* Espaça título do email */
+  justify-content: space-between;
   align-items: center;
   background: white;
   padding: 20px 25px;
   border-radius: var(--radius);
   margin-bottom: 30px;
   box-shadow: var(--shadow);
-}
-
-.topbar-info {
-  display: flex;
-  flex-direction: column;
 }
 
 .topbar h2 {
@@ -135,14 +146,14 @@ html, body {
   color: var(--muted);
 }
 
-/* MENU BUTTON (Escondido no Desktop) */
+/* MENU BUTTON (Mobile) */
 .menu-btn {
   font-size: 24px;
   background: none;
   border: none;
   color: var(--primary);
   cursor: pointer;
-  display: none; /* Só aparece no mobile */
+  display: none;
   margin-right: 15px;
 }
 
@@ -180,7 +191,7 @@ html, body {
   color: var(--primary);
 }
 
-/* OVERLAY (Celular) */
+/* OVERLAY (Mobile) */
 .overlay {
   position: fixed;
   inset: 0;
@@ -189,41 +200,22 @@ html, body {
   z-index: 998;
 }
 
-/* 📱 RESPONSIVIDADE (Celular) */
+/* RESPONSIVIDADE */
 @media (max-width: 768px) {
-  .app {
-    display: block; /* Tira o layout lado a lado */
-  }
-
-  .menu-btn {
-    display: block;
-  }
-
+  .app { display: block; }
+  .menu-btn { display: block; }
   .sidebar {
     position: fixed;
-    left: -260px; /* Esconde */
+    left: -260px;
     top: 0;
-    transition: 0.3s ease;
   }
-
-  .sidebar.active {
-    left: 0; /* Desliza para dentro */
-  }
-
-  .overlay.active {
-    display: block;
-  }
-
-  .main {
-    padding: 20px;
-  }
-
-  .topbar {
-    justify-content: flex-start;
-    padding: 15px;
-  }
+  .sidebar.active { left: 0; }
+  .overlay.active { display: block; }
+  .main { padding: 20px; }
+  .topbar { justify-content: flex-start; padding: 15px; }
 }
-/* TELA DE CARREGAMENTO FULLSCREEN */
+
+/* TELA DE CARREGAMENTO (ESTILO VÍDEO) */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -235,8 +227,8 @@ html, body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 10000; /* Fica acima de tudo */
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    z-index: 10000;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .loading-overlay.hidden {
@@ -264,4 +256,3 @@ html, body {
     color: #555;
     font-size: 14px;
 }
-
