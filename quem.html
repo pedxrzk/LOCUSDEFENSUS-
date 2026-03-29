@@ -2,203 +2,57 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quem Somos - Limno</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos específicos da página mantendo a paleta do sistema */
-        .about-container {
-            background: white;
-            border-radius: var(--radius);
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow);
-        }
-        .about-container h1 { color: var(--primary); margin-bottom: 15px; }
-        .about-container p { line-height: 1.6; color: var(--muted); margin-bottom: 15px; }
-        
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-        }
-        .member-card {
-            background: white;
-            padding: 25px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-            border-bottom: 4px solid var(--primary-light);
-            transition: 0.3s;
-        }
-        .member-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
-        .member-avatar {
-            font-size: 40px;
-            background: var(--background);
-            width: 80px;
-            height: 80px;
-            line-height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-        }
-        .member-card h3 { color: var(--text); margin-bottom: 5px; }
-        .member-card span { color: var(--primary-light); font-weight: 600; font-size: 14px; }
-    </style>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
 </head>
-
 <body>
 
 <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner-circular"></div>
-    <p id="loadingText">Carregando equipe...</p>
+    <p>Carregando equipe...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
-
-    <nav class="sidebar" id="sidebar">
-    <div class="logo-card">
-        <img src="logo.sidebar.png" alt="Limno Logo" class="logo">
-    </div>
-
-    <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-    <a href="controle.html"><i class="fa-solid fa-sliders"></i> Controle</a>
-    <a href="historico.html"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</a>
-    <a href="quem.html"><i class="fa-solid fa-users"></i> Quem Somos</a>
-    
-    <a href="sobre.html" class="active"><i class="fa-solid fa-circle-info"></i> Sobre</a>
-
-    <div style="margin-top: 30px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+    <nav class="sidebar">
+        <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="controle.html">⚙️ Controle</a>
+        <a href="historico.html">🕒 Histórico</a>
+        <a href="quem.html">👥 Quem Somos</a>
+        <a href="sobre.html">ℹ️ Sobre</a>
+        <div style="margin-top: auto; padding: 15px;">
+            <p id="userSidebar" style="font-size: 10px; color: #ccc;"></p>
+            <button id="logoutBtn" class="btn-danger">Sair</button>
         </div>
-</nav>
-
-    <div class="overlay" id="overlay"></div>
+    </nav>
 
     <main class="main">
-
-        <header class="topbar">
-            <div style="flex: 1; min-width: 0;">
-                <h2>Nossa Equipe</h2>
-                <p class="user-email" id="userTopbar">carregando...</p>
-            </div>
-            <button class="menu-btn" id="menuBtn">☰</button>
-        </header>
-
-        <section class="about-container">
-            <h1>🚀 Locus Defensus</h1>
-            <p>Somos uma equipe focada no desenvolvimento de soluções inteligentes de monitoramento IoT, utilizando ESP32 para análise de dados em tempo real.</p>
-            <p><strong>Missão:</strong> Segurança e eficiência através da tecnologia acessível.</p>
-        </section>
-
-        <div class="team-grid">
-            <div class="member-card">
-                <div class="member-avatar">👨‍💻</div>
-                <h3>Pedro Paulo</h3>
-                <span>Frontend & UI Designer</span>
-            </div>
-
-            <div class="member-card">
-                <div class="member-avatar">🧪</div>
-                <h3>Yasmin</h3>
-                <span>Testes & Validação</span>
-            </div>
-
-            <div class="member-card">
-                <div class="member-avatar">📄</div>
-                <h3>Kelen</h3>
-                <span>Documentação</span>
-            </div>
-
-            <div class="member-card">
-                <div class="member-avatar">⚙️</div>
-                <h3>Equipe IoT</h3>
-                <span>Hardware & ESP32</span>
-            </div>
+        <header class="topbar"><h2>Nossa Equipe</h2></header>
+        <div class="cards">
+            <div class="card"><h3>Pedro Paulo</h3><p>UI Designer</p></div>
+            <div class="card"><h3>Yasmin</h3><p>Testes</p></div>
+            <div class="card"><h3>Kelen</h3><p>Documentação</p></div>
         </div>
     </main>
 </div>
 
-<script type="importmap">
-    {
-        "imports": {
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-        }
-    }
-</script>
-
 <script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
-        authDomain: "coleta-7fecd.firebaseapp.com",
-        databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
-        projectId: "coleta-7fecd",
-        storageBucket: "coleta-7fecd.firebasestorage.app",
-        messagingSenderId: "130929270335",
-        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
-    };
-
+    /* MESMO SCRIPT DO HISTÓRICO (IMPORTANTE MANTER A TRAVA DE SEGURANÇA) */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    const firebaseConfig = { /* coloque seus dados aqui */ };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    setPersistence(auth, browserLocalPersistence);
-
-    // Selecionando IDs atualizados para o efeito de loading
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const appEl = document.getElementById('app');
-    const userTopbar = document.getElementById('userTopbar');
-    const userSidebar = document.getElementById('userSidebar');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const menuBtn = document.getElementById('menuBtn');
-
-    // Menu Toggle
-    let menuOpen = false;
-    function toggleMenu() {
-        menuOpen = !menuOpen;
-        sidebar.classList.toggle('active', menuOpen);
-        overlay.classList.toggle('active', menuOpen);
-    }
-
-    menuBtn.onclick = toggleMenu;
-    overlay.onclick = toggleMenu;
-
-    // Lógica de Autenticação com Efeito de Loading
-    let authInitialized = false;
+    
     onAuthStateChanged(auth, (user) => {
-        if (!authInitialized) {
-            authInitialized = true;
-            if (user) {
-                userTopbar.textContent = user.email;
-                userSidebar.textContent = user.email;
-                
-                // Simula o delay do vídeo (1.5 segundos) antes de revelar a página
-                setTimeout(() => {
-                    loadingOverlay.classList.add('hidden'); // Fade-out suave via CSS
-                    appEl.style.display = "flex";          // Revela o layout
-                }, 1000);
-
-            } else {
-                window.location.replace("index.html");
-            }
-        }
-    });
-
-    // Logout
-    document.getElementById('logoutBtn').onclick = async () => {
-        if (confirm('Deseja sair?')) {
-            await signOut(auth);
+        if (user) {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+        } else {
             window.location.replace("index.html");
         }
-    };
+    });
 </script>
-
 </body>
 </html>
