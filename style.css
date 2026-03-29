@@ -173,3 +173,11 @@ html, body {
   .main { padding: 15px; }
   .cards { grid-template-columns: 1fr; }
 }
+/* Estilo para o link selecionado */
+.sidebar a.active {
+  background: var(--primary-light); /* Cor de destaque */
+  font-weight: bold;
+  border-left: 4px solid #ffffff; /* Uma bordinha branca opcional para destacar mais */
+  padding-left: 8px; /* Ajuste para compensar a bordinha */
+}
+
