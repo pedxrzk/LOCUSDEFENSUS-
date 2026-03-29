@@ -1,81 +1,49 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locus Defensus - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="loading" id="loading" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 20px;">
-    <div class="spinner" style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+<div class="loading" id="loading">
+    <div class="spinner"></div>
     <p>Carregando dashboard...</p>
 </div>
 
-<style>
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    .loading {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        flex-direction: column;
-        gap: 20px;
-    }
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid #667eea;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-</style>
+<div class="app" id="app" style="display: none;">
 
-<div class="app" style="display: none;" id="app">
-
-    <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="logo-card">
             <img src="logo.sidebar.png" alt="Logo" class="logo" onerror="this.style.display='none'">
         </div>
 
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="controle.html">Controle</a>
-        <a href="historico.html">Histórico</a>
-        <a href="quem.html">Quem Somos</a>
-        <a href="sobre.html">Sobre</a>
+        <nav>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="controle.html">Controle</a>
+            <a href="historico.html">Histórico</a>
+            <a href="quem.html">Quem Somos</a>
+            <a href="sobre.html">Sobre</a>
+        </nav>
 
-        <button class="btn btn-danger mt-20" id="logoutBtn">
-            Sair
-        </button>
+        <button class="btn-danger" id="logoutBtn">Sair</button>
     </div>
 
-    <!-- OVERLAY -->
-    <div class="overlay" onclick="toggleMenu()"></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-    <!-- CONTEÚDO -->
     <div class="main">
 
         <div class="topbar">
-            <button class="menu-btn" onclick="toggleMenu()">☰</button>
-            <h2>Dashboard</h2>
-            <p id="user"></p>
+            <div style="display: flex; align-items: center;">
+                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                <h2>Dashboard</h2>
+            </div>
+            <p id="user" class="user-email"></p>
         </div>
 
         <div class="cards">
-
             <div class="card">
                 <h3>🌡️ Temperatura</h3>
                 <p>25.7°C</p>
@@ -100,11 +68,9 @@
                 <h3>💡 LED</h3>
                 <p>Ligado</p>
             </div>
-
         </div>
 
     </div>
-
 </div>
 
 <script type="importmap">
@@ -138,68 +104,39 @@
     const userEl = document.getElementById('user');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // ✅ Função toggleMenu (global para funcionar no onclick)
+    // ✅ Função toggleMenu global para mobile
     window.toggleMenu = function() {
         const sidebar = document.querySelector(".sidebar");
         const overlay = document.querySelector(".overlay");
-        if (sidebar && overlay) {
-            sidebar.classList.toggle("active");
-            overlay.classList.toggle("active");
-        }
+        sidebar.classList.toggle("active");
+        overlay.classList.toggle("active");
     };
-
-    // Fechar menu ao clicar nos links (mobile)
-    document.querySelectorAll(".sidebar a").forEach(link => {
-        link.addEventListener("click", () => {
-            const sidebar = document.querySelector(".sidebar");
-            const overlay = document.querySelector(".overlay");
-            if (window.innerWidth <= 768) {
-                if (sidebar) sidebar.classList.remove("active");
-                if (overlay) overlay.classList.remove("active");
-            }
-        });
-    });
 
     // ✅ Logout
-    window.logout = async function() {
+    const handleLogout = async () => {
         try {
             await signOut(auth);
-            window.location.href = "index.html";
+            window.location.replace("index.html");
         } catch (error) {
             console.error("Erro ao sair:", error);
-            alert("Erro ao sair. Tente novamente.");
         }
     };
 
-    // Conectar o botão de logout se existir
-    if (logoutBtn) {
-        logoutBtn.onclick = window.logout;
-    }
+    if (logoutBtn) logoutBtn.onclick = handleLogout;
 
-    // ✅ VERIFICAÇÃO DE AUTENTICAÇÃO SIMPLES E CORRETA
-    let authChecked = false;
-
+    // ✅ Monitor de Autenticação
     onAuthStateChanged(auth, (user) => {
-        console.log("Dashboard - Auth:", user ? user.email : "Não logado");
-        
         if (user) {
-            // Usuário logado - mostra o dashboard
-            authChecked = true;
+            // Usuário logado
+            if (userEl) userEl.innerText = "👤 " + user.email;
             
-            if (userEl) {
-                userEl.innerText = "👤 " + user.email;
-            }
-            
-            // Esconde loading e mostra app
-            if (loadingEl) loadingEl.style.display = "none";
-            if (appEl) appEl.style.display = "block";
+            // TRANSISÇÃO: Esconde loading e mostra app como FLEX
+            loadingEl.style.display = "none";
+            appEl.style.display = "flex"; 
             
         } else {
-            // Usuário NÃO logado - redireciona para login
-            if (!authChecked) {
-                console.log("Redirecionando para login...");
-                window.location.replace("index.html");
-            }
+            // Usuário não logado
+            window.location.replace("index.html");
         }
     });
 </script>
