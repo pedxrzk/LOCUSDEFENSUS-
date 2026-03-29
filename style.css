@@ -39,7 +39,7 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  position: relative;
+  height: 100vh; /* Altura total para empurrar o rodapé */
   transition: all 0.3s ease;
 }
 
@@ -64,11 +64,16 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
 }
 .sidebar a:hover { background: var(--primary-light); }
 
-/* Rodapé da Sidebar (Login e Sair) */
 .sidebar-footer {
-  margin-top: auto;
-  padding-top: 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Linha divisória */
+  margin-top: auto; /* Empurra tudo para o fundo */
+  padding-bottom: 10px; /* Pequeno respiro do fim da tela */
+}
+
+.divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 100%;
+  margin-bottom: 12px; /* Espaço antes do botão */
 }
 
 #userSidebar {
@@ -78,6 +83,7 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   word-break: break-all;
 }
 
+/* Botão Sair */
 .btn-danger {
   background: var(--danger);
   color: white;
@@ -87,6 +93,11 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   cursor: pointer;
   width: 100%;
   font-weight: bold;
+  transition: 0.2s;
+}
+
+.btn-danger:hover {
+  filter: brightness(1.1);
 }
 
 /* Conteúdo */
