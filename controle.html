@@ -2,192 +2,77 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle - Limno</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
-
 <body>
 
-<div class="loading-overlay" id="loadingOverlay">
+<div id="loadingOverlay" class="loading-overlay">
     <div class="spinner-circular"></div>
-    <p id="loadingText">Acessando painel de controle...</p>
+    <p style="margin-top:15px;">Acessando controles...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
-
-    <nav class="sidebar" id="sidebar">
-        <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Limno Logo" class="logo">
-        </div>
-
-        <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-        <a href="controle.html" class="active"><i class="fa-solid fa-sliders"></i> Controle</a>
-        <a href="historico.html"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</a>
-        <a href="quem.html"><i class="fa-solid fa-users"></i> Quem Somos</a>
-        <a href="sobre.html"><i class="fa-solid fa-circle-info"></i> Sobre</a>
-
-        <div style="margin-top: 30px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
-                carregando...
-            </p>
-            <button class="btn-danger" id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i> Sair
-            </button>
-        </div>
+    <nav class="sidebar">
+        <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="controle.html">⚙️ Controle</a>
+        <a href="historico.html">🕒 Histórico</a>
+        <a href="quem.html">👥 Quem Somos</a>
+        <a href="sobre.html">ℹ️ Sobre</a>
+        <button id="logoutBtn" class="btn-danger">Sair</button>
     </nav>
-
-    <div class="overlay" id="overlay"></div>
 
     <main class="main">
         <header class="topbar">
-            <div style="flex: 1; min-width: 0;">
-                <h2>Painel de Controle</h2>
-                <p class="user-email" id="userTopbar">carregando...</p>
-            </div>
-            <button class="menu-btn" id="menuBtn">☰</button>
+            <h2>Painel de Controle</h2>
         </header>
-
         <div class="cards">
-            <article class="card">
-                <h3>💡 Status do LED</h3>
+            <div class="card">
+                <h3>💡 LED</h3>
                 <p id="ledStatus">Carregando...</p>
-                <button class="btn-primary" id="btnLed" style="margin-top: 15px; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer;">
-                    Alternar LED
-                </button>
-            </article>
-
-            <article class="card">
-                <h3>🔊 Status do Buzzer</h3>
+                <button id="btnLed" style="margin-top:10px; padding:8px; width:100%; cursor:pointer;">Alternar</button>
+            </div>
+            <div class="card">
+                <h3>🔊 Buzzer</h3>
                 <p id="buzzerStatus">Carregando...</p>
-                <button class="btn-primary" id="btnBuzzer" style="margin-top: 15px; width: 100%; padding: 10px; border-radius: 8px; cursor: pointer;">
-                    Alternar Buzzer
-                </button>
-            </article>
+                <button id="btnBuzzer" style="margin-top:10px; padding:8px; width:100%; cursor:pointer;">Alternar</button>
+            </div>
         </div>
     </main>
 </div>
 
-<script type="importmap">
-    {
-        "imports": {
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
-            "firebase/database": "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"
-        }
-    }
-</script>
-
 <script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
-    import { getDatabase, ref, onValue, set } from "firebase/database";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
-        authDomain: "coleta-7fecd.firebaseapp.com",
-        databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
-        projectId: "coleta-7fecd",
-        storageBucket: "coleta-7fecd.firebasestorage.app",
-        messagingSenderId: "130929270335",
-        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
-    };
-
+    const firebaseConfig = { /* MESMA CONFIG DO DASHBOARD */ };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
-    setPersistence(auth, browserLocalPersistence);
 
-    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loader = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
-    const userTopbar = document.getElementById('userTopbar');
-    const userSidebar = document.getElementById('userSidebar');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const menuBtn = document.getElementById('menuBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
 
-    // Menu Toggle Seguro
-    function toggleMenu() {
-        if (sidebar && overlay) {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-    }
-    if (menuBtn) menuBtn.onclick = toggleMenu;
-    if (overlay) overlay.onclick = toggleMenu;
-
-    // Autenticação com trava contra carregamento infinito
-    let authInitialized = false;
     onAuthStateChanged(auth, (user) => {
-        if (!authInitialized) {
-            authInitialized = true;
-            if (user) {
-                if (userTopbar) userTopbar.textContent = user.email;
-                if (userSidebar) userSidebar.textContent = user.email;
-                
-                setTimeout(() => {
-                    if (loadingOverlay) loadingOverlay.classList.add('hidden');
-                    if (appEl) appEl.style.display = "flex";
-                }, 500);
-            } else {
-                window.location.replace("index.html");
-            }
+        if (user) {
+            if(loader) loader.style.display = 'none';
+            if(appEl) appEl.style.display = 'flex';
+        } else {
+            window.location.replace("index.html");
         }
     });
 
-    // Lógica do Firebase (Controles)
-    const ledRef = ref(db, 'controles/led');
-    const buzzerRef = ref(db, 'controles/buzzer');
+    // Lógica simples do Firebase
+    onValue(ref(db, 'controles/led'), (s) => document.getElementById('ledStatus').textContent = s.val() ? "ON" : "OFF");
+    onValue(ref(db, 'controles/buzzer'), (s) => document.getElementById('buzzerStatus').textContent = s.val() ? "ON" : "OFF");
 
-    onValue(ledRef, (snapshot) => {
-        const estado = snapshot.val();
-        const el = document.getElementById('ledStatus');
-        if (el) {
-            el.textContent = estado ? "Ligado" : "Desligado";
-            el.style.color = estado ? "#2ecc71" : "#e74c3c";
-        }
-    });
-
-    onValue(buzzerRef, (snapshot) => {
-        const estado = snapshot.val();
-        const el = document.getElementById('buzzerStatus');
-        if (el) {
-            el.textContent = estado ? "Ligado" : "Desligado";
-            el.style.color = estado ? "#2ecc71" : "#e74c3c";
-        }
-    });
-
-    const btnLed = document.getElementById('btnLed');
-    if (btnLed) {
-        btnLed.onclick = () => {
-            const current = document.getElementById('ledStatus')?.textContent === "Ligado";
-            set(ledRef, !current);
-        };
-    }
-
-    const btnBuzzer = document.getElementById('btnBuzzer');
-    if (btnBuzzer) {
-        btnBuzzer.onclick = () => {
-            const current = document.getElementById('buzzerStatus')?.textContent === "Ligado";
-            set(buzzerRef, !current);
-        };
-    }
-
-    // Logout Seguro
-    if (logoutBtn) {
-        logoutBtn.onclick = async () => {
-            if (confirm('Deseja sair do painel de controle?')) {
-                await signOut(auth);
-                window.location.replace("index.html");
-            }
-        };
-    }
+    document.getElementById('btnLed').onclick = () => {
+        const status = document.getElementById('ledStatus').textContent === "ON";
+        set(ref(db, 'controles/led'), !status);
+    };
 </script>
-
 </body>
 </html>
