@@ -176,6 +176,28 @@
     document.getElementById('btnFechar').onclick = () => registrarEvento('fechada');
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
 
+ // Fechar ao clicar fora ou em links
+    document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
+            sidebar.classList.remove('active');
+        }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            if(document.getElementById('userTopbar')) document.getElementById('userTopbar').textContent = user.email;
+            if(document.getElementById('userSidebar')) document.getElementById('userSidebar').textContent = user.email;
+            forceShow();
+        } else {
+            window.location.replace("index.html");
+        }
+    });
+
+    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
+    
+    setTimeout(forceShow, 3000); // Segurança
+    
+
 </script>
 </body>
 </html>
