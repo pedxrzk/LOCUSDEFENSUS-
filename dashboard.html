@@ -17,8 +17,6 @@
     <p id="loadingText">Carregando dashboard...</p>
 </div>
 
-
-
 <div class="app" id="app" style="display: none;">
 
     <nav class="sidebar" id="sidebar">
@@ -34,14 +32,13 @@
         <a href="sobre.html">ℹ️ Sobre</a>
 
         <div style="margin-top: 20px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-    <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 10px;" id="userSidebar">
-        usuario@email.com
-    </p>
-    <button class="btn-danger" id="logoutBtn" style="width: 100%;">
-        🚪 Sair
-    </button>
-</div>
-
+            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
+                carregando...
+            </p>
+            <button class="btn-danger" id="logoutBtn" style="width: 100%;">
+                🚪 Sair
+            </button>
+        </div>
     </nav>
 
     <div class="overlay" id="overlay"></div>
@@ -57,7 +54,6 @@
         </header>
 
         <div class="cards">
-
             <article class="card">
                 <h3>🌡️ Temperatura</h3>
                 <p>25.7°C</p>
@@ -82,11 +78,8 @@
                 <h3>💡 LED</h3>
                 <p>Ligado</p>
             </article>
-
         </div>
-
     </main>
-
 </div>
 
 <script type="importmap">
@@ -114,11 +107,10 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    
-    // Mantém o usuário logado ao atualizar a página
     setPersistence(auth, browserLocalPersistence);
 
-    const loadingEl = document.getElementById('loading');
+    // Selecionando os IDs atualizados
+    const loadingOverlay = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
     const userTopbar = document.getElementById('userTopbar');
     const userSidebar = document.getElementById('userSidebar');
@@ -126,7 +118,7 @@
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
 
-    // ✅ Lógica de Menu Padronizada
+    // Menu Toggle
     let menuOpen = false;
     function toggleMenu() {
         menuOpen = !menuOpen;
@@ -138,7 +130,7 @@
     overlay.addEventListener('click', toggleMenu);
     menuBtn.addEventListener('click', toggleMenu);
 
-    // ✅ Verificação de Autenticação
+    // Lógica de Autenticação com o Efeito de Loading do Vídeo
     let authInitialized = false;
 
     onAuthStateChanged(auth, (user) => {
@@ -147,15 +139,20 @@
             if (user) {
                 userTopbar.textContent = user.email;
                 userSidebar.textContent = user.email;
-                loadingEl.style.display = "none";
-                appEl.style.display = "flex";
+                
+                // Efeito de 1.5 segundos igual ao vídeo enviado
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden'); // Fade out suave (requer CSS)
+                    appEl.style.display = "flex";          // Mostra o conteúdo
+                }, 1500); 
+
             } else {
                 window.location.replace("index.html");
             }
         }
     });
 
-    // ✅ Logout
+    // Logout
     document.getElementById('logoutBtn').addEventListener('click', async () => {
         if (confirm('Deseja realmente sair?')) {
             try {
