@@ -15,140 +15,70 @@
 
 <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner-circular"></div>
-    <p id="loadingText">Carregando dashboard...</p>
+    <p>Carregando...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
-
-    <nav class="sidebar" id="sidebar">
+    <nav class="sidebar">
         <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Limno Logo" class="logo">
-            <span style="font-size: 24px; font-weight: bold; color: white; display: none;" id="logoFallback">LIMNO</span>
+            <img src="logo.sidebar.png" class="logo">
         </div>
-
-        <a href="dashboard.html" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+        
+        <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
         <a href="controle.html"><i class="fa-solid fa-sliders"></i> Controle</a>
         <a href="historico.html"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</a>
         <a href="quem.html"><i class="fa-solid fa-users"></i> Quem Somos</a>
         <a href="sobre.html"><i class="fa-solid fa-circle-info"></i> Sobre</a>
 
-        <div style="margin-top: 30px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
-                carregando...
-            </p>
-            <button class="btn-danger" id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i> Sair
-            </button>
+        <div style="margin-top: auto; padding-top: 20px;">
+            <p id="userSidebar" style="font-size: 12px; margin-bottom: 10px; opacity: 0.7;"></p>
+            <button id="logoutBtn" class="btn-danger">Sair</button>
         </div>
     </nav>
 
-    <div class="overlay" id="overlay"></div>
-
     <main class="main">
-        <header class="topbar">
-            <div style="flex: 1; min-width: 0;">
-                <h2>Painel Principal</h2>
-                <p class="user-email" id="userTopbar">carregando...</p>
-            </div>
-            <button class="menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
-        </header>
-
-        <div class="cards">
-            <article class="card">
-                <h3>🌡️ Temperatura</h3>
-                <p>25.7°C</p>
-            </article>
-            <article class="card">
-                <h3>💧 Umidade</h3>
-                <p>55%</p>
-            </article>
-            <article class="card">
-                <h3>📊 Pressão</h3>
-                <p>Normal</p>
-            </article>
-            <article class="card">
-                <h3>🔊 Buzzer</h3>
-                <p>Desligado</p>
-            </article>
-            <article class="card">
-                <h3>💡 LED</h3>
-                <p>Ligado</p>
-            </article>
-        </div>
-    </main>
+        <p id="userTopbar"></p>
+        </main>
 </div>
 
-<script type="importmap">
-    {
-        "imports": {
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-        }
-    }
-</script>
-
 <script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
-        authDomain: "coleta-7fecd.firebaseapp.com",
-        databaseURL: "https://coleta-7fecd-default-rtdb.firebaseio.com",
-        projectId: "coleta-7fecd",
-        storageBucket: "coleta-7fecd.firebasestorage.app",
-        messagingSenderId: "130929270335",
-        appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
-    };
-
+    const firebaseConfig = { /* SEUS DADOS AQUI */ };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    setPersistence(auth, browserLocalPersistence);
 
-    // Seleção de elementos com segurança
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const appEl = document.getElementById('app');
-    const userTopbar = document.getElementById('userTopbar');
-    const userSidebar = document.getElementById('userSidebar');
+    const loading = document.getElementById('loadingOverlay');
+    const appDiv = document.getElementById('app');
 
-    // --- TRAVA DE SEGURANÇA (Obrigatório para destravar o loading) ---
+    // SEGURANÇA: Se em 3 segundos não carregar, força a abertura
     setTimeout(() => {
-        if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
-            loadingOverlay.classList.add('hidden');
-            if (appEl) appEl.style.display = "flex";
-            console.log("Sistema destravado por tempo limite.");
-        }
-    }, 2000); 
+        if (loading) loading.classList.add('hidden');
+        if (appDiv) appDiv.style.display = "flex";
+    }, 3000);
 
-    let authInitialized = false;
     onAuthStateChanged(auth, (user) => {
-        if (!authInitialized) {
-            authInitialized = true;
-            if (user) {
-                // Só altera o texto se os elementos existirem
-                if (userTopbar) userTopbar.textContent = user.email;
-                if (userSidebar) userSidebar.textContent = user.email;
-                
-                // Esconde o loading
-                if (loadingOverlay) loadingOverlay.classList.add('hidden');
-                if (appEl) appEl.style.display = "flex"; 
-            } else {
-                window.location.replace("index.html");
-            }
+        if (user) {
+            // Verifica se os elementos existem antes de mudar o texto (EVITA O TRAVAMENTO)
+            const uTop = document.getElementById('userTopbar');
+            const uSide = document.getElementById('userSidebar');
+            if (uTop) uTop.textContent = user.email;
+            if (uSide) uSide.textContent = user.email;
+
+            loading.classList.add('hidden');
+            appDiv.style.display = "flex";
+        } else {
+            window.location.replace("index.html");
         }
     });
 
-    // Lógica do botão de Logout (com verificação se ele existe)
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.onclick = async () => {
-            if (confirm('Deseja sair?')) {
-                await signOut(auth);
-                window.location.replace("index.html");
-            }
-        };
+    const btnSair = document.getElementById('logoutBtn');
+    if (btnSair) {
+        btnSair.onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
     }
 </script>
+
 
 
 </body>
