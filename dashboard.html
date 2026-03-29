@@ -88,6 +88,17 @@
 </script>
 
 <script type="module">
+    // FORÇAR SAÍDA DO LOADING (ADICIONE ISSO AQUI)
+    setTimeout(() => {
+        const loading = document.getElementById('loadingOverlay');
+        if (loading) loading.classList.add('hidden');
+        const appEl = document.getElementById('app');
+        if (appEl) appEl.style.display = "flex";
+        console.log("Loading removido por segurança.");
+    }, 2000);
+
+    // ... restante do seu código Firebase atual ...
+
     import { initializeApp } from "firebase/app";
     import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "firebase/auth";
 
