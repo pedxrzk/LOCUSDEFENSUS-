@@ -10,12 +10,26 @@
   --shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  font-family: 'Inter', sans-serif; 
+}
 
-body { background: var(--background); color: var(--text); overflow-x: hidden; }
+body { 
+  background: var(--background); 
+  color: var(--text); 
+  overflow-x: hidden; 
+}
 
-.app { display: flex; min-height: 100vh; }
+/* Estrutura Principal */
+.app { 
+  display: flex; 
+  min-height: 100vh; 
+}
 
+/* Sidebar (Menu Lateral) */
 .sidebar {
   width: 260px;
   background: var(--primary);
@@ -23,6 +37,7 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   padding: 20px;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0; /* Garante que ela não "encolha" no desktop */
 }
 
 .logo-card { margin-bottom: 25px; text-align: center; }
@@ -48,9 +63,15 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
+  margin-top: auto; /* Joga o botão de sair para o fim do menu */
 }
 
-.main { flex: 1; padding: 30px; }
+/* Área de Conteúdo */
+.main { 
+  flex: 1; 
+  padding: 30px; 
+  width: 100%;
+}
 
 .topbar {
   background: white;
@@ -60,6 +81,7 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   box-shadow: var(--shadow);
 }
 
+/* Grid de Cards */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -77,6 +99,7 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
 .card h3 { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
 .card p { font-size: 24px; font-weight: bold; color: var(--primary); }
 
+/* Feedback Visual */
 .spinner-circular {
   width: 40px;
   height: 40px;
@@ -84,6 +107,38 @@ body { background: var(--background); color: var(--text); overflow-x: hidden; }
   border-top: 4px solid var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  margin: 20px auto;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- CORREÇÃO PARA MOBILE --- */
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column; /* Menu em cima, conteúdo embaixo */
+  }
+
+  .sidebar {
+    width: 100%; /* Ocupa a largura toda no celular */
+    height: auto;
+    padding: 15px;
+  }
+
+  .logo-card {
+    margin-bottom: 15px;
+  }
+
+  /* Ajuste para os links não ocuparem muito espaço vertical no mobile */
+  .sidebar a {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .main {
+    padding: 15px; /* Reduz o respiro lateral no celular */
+  }
+
+  .cards {
+    grid-template-columns: 1fr; /* Um card por linha no celular */
+  }
+}
