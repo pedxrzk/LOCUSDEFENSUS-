@@ -11,42 +11,41 @@
 
 <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner-circular"></div>
-    <p>Acessando controles...</p>
+    <p>Acessando controles do protótipo...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
     <nav class="sidebar" id="sidebar">
-    <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
-    <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
-    <a href="controle.html" class="active"><i class="fas fa-sliders"></i> Controle</a>
-    <a href="historico.html"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
-    <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
-    <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
-    <div class="user-info-group">
-        <p id="userSidebar"></p>
-        <div class="divider"></div>
-        <button id="logoutBtn" class="btn-danger">Sair</button>
-    </div>
-</nav>
-
+        <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="controle.html" class="active"><i class="fas fa-sliders"></i> Controle</a>
+        <a href="historico.html"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
+        <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
+        <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
+        <div class="user-info-group">
+            <p id="userSidebar" style="font-weight: bold; color: white;"></p>
+            <div class="divider"></div>
+            <button id="logoutBtn" class="btn-danger">Sair</button>
+        </div>
+    </nav>
 
     <main class="main">
         <header class="topbar">
-            <h2>Painel de Controle</h2>
+            <h2 id="tituloPagina">Painel de Controle</h2>
             <p id="userTopbar" style="font-size: 12px; color: #666;"></p>
         </header>
         <div class="cards">
             <div class="card">
                 <h3>💡 LED</h3>
-                <p id="ledStatus" style="font-size: 24px; font-weight: bold; color: var(--primary);">...</p>
-                <button id="btnLed" class="btn-danger" style="margin-top:15px; background: var(--primary-light);">Alternar</button>
+                <p id="ledStatus" style="font-size: 24px; font-weight: bold; color: #ff6b6b;">AGUARDANDO...</p>
+                <button id="btnLed" class="btn-danger" style="margin-top:15px; background: #143458;">Alternar LED</button>
             </div>
             <div class="card">
-                <h3>🔊 Buzzer</h3>
-                <p id="buzzerStatus" style="font-size: 24px; font-weight: bold; color: var(--primary);">...</p>
-                <button id="btnBuzzer" class="btn-danger" style="margin-top:15px; background: var(--primary-light);">Alternar</button>
+                <h3>🔊 BUZZER</h3>
+                <p id="buzzerStatus" style="font-size: 24px; font-weight: bold; color: #ff6b6b;">AGUARDANDO...</p>
+                <button id="btnBuzzer" class="btn-danger" style="margin-top:15px; background: #143458;">Alternar Buzzer</button>
             </div>
         </div>
     </main>
@@ -76,18 +75,22 @@
     const sidebar = document.getElementById('sidebar');
     const btnMenu = document.getElementById('menuToggle');
 
-    // Menu Mobile
-    if(btnMenu) {
-        btnMenu.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); };
-    }
-    document.addEventListener('click', (e) => {
-        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) sidebar.classList.remove('active');
-    });
+    let serialLogado = "";
 
+    // 1. Monitorar o Login e Identificar o Serial
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            document.getElementById('userSidebar').textContent = user.email;
-            document.getElementById('userTopbar').textContent = user.email;
+            // Extrai o serial do email (ex: 00001@locus.com -> 00001)
+            serialLogado = user.email.split('@')[0];
+            
+            const textoSerial = "PROTÓTIPO: " + serialLogado.toUpperCase();
+            document.getElementById('userSidebar').textContent = textoSerial;
+            document.getElementById('userTopbar').textContent = textoSerial;
+            document.getElementById('tituloPagina').textContent = "Controle - " + serialLogado;
+
+            // Inicia a escuta dos valores específicos deste protótipo
+            vincularAosDados(serialLogado);
+
             loader.style.display = 'none';
             appEl.style.display = 'flex';
         } else {
@@ -95,18 +98,44 @@
         }
     });
 
-    // Firebase Realtime
-    onValue(ref(db, 'controles/led'), (s) => document.getElementById('ledStatus').textContent = s.val() ? "ON" : "OFF");
-    onValue(ref(db, 'controles/buzzer'), (s) => document.getElementById('buzzerStatus').textContent = s.val() ? "ON" : "OFF");
+    // 2. Sincronizar Interface com o Firebase
+    function vincularAosDados(serial) {
+        const ledRef = ref(db, `prototipos/${serial}/led`);
+        const buzzerRef = ref(db, `prototipos/${serial}/buzzer`);
 
+        onValue(ledRef, (snapshot) => {
+            const ligado = snapshot.val();
+            const el = document.getElementById('ledStatus');
+            el.textContent = ligado ? "LIGADO" : "DESLIGADO";
+            el.style.color = ligado ? "#4ae3b5" : "#ff6b6b";
+        });
+
+        onValue(buzzerRef, (snapshot) => {
+            const ligado = snapshot.val();
+            const el = document.getElementById('buzzerStatus');
+            el.textContent = ligado ? "LIGADO" : "DESLIGADO";
+            el.style.color = ligado ? "#4ae3b5" : "#ff6b6b";
+        });
+    }
+
+    // 3. Ações de Clique (Enviar para o Firebase)
     document.getElementById('btnLed').onclick = () => {
-        const status = document.getElementById('ledStatus').textContent === "ON";
-        set(ref(db, 'controles/led'), !status);
+        const statusAtual = document.getElementById('ledStatus').textContent === "LIGADO";
+        set(ref(db, `prototipos/${serialLogado}/led`), !statusAtual);
     };
+
     document.getElementById('btnBuzzer').onclick = () => {
-        const status = document.getElementById('buzzerStatus').textContent === "ON";
-        set(ref(db, 'controles/buzzer'), !status);
+        const statusAtual = document.getElementById('buzzerStatus').textContent === "LIGADO";
+        set(ref(db, `prototipos/${serialLogado}/buzzer`), !statusAtual);
     };
+
+    // 4. Menu e Logout
+    if(btnMenu) {
+        btnMenu.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); };
+    }
+    document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) sidebar.classList.remove('active');
+    });
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
 
