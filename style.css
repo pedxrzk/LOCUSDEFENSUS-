@@ -67,29 +67,19 @@ html, body {
   max-width: 180px;
 }
 
-/* LINKS DE NAVEGAÇÃO (COM SUPORTE A ÍCONES E ACTIVE) */
+/* LINKS DE NAVEGAÇÃO - VOLTADO AO ORIGINAL */
 .sidebar a {
     color: white;
     text-decoration: none;
-    padding: 12px 15px;
+    padding: 12px;
     border-radius: var(--radius);
-    margin-bottom: 5px;
-    display: flex;      
-    align-items: center;
-    transition: 0.3s;
-    background: transparent;
+    margin-bottom: 8px;
+    display: block; /* Voltando para block como era no início */
+    transition: 0.2s;
 }
 
-.sidebar a i {
-    width: 25px;
-    margin-right: 12px;
-    text-align: center;
-    font-size: 18px;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-    background: var(--primary-light) !important;
+.sidebar a:hover {
+    background: var(--primary-light);
 }
 
 /* BOTÃO SAIR */
@@ -102,10 +92,6 @@ html, body {
   border: none;
   cursor: pointer;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
 }
 
 .btn-danger:hover {
@@ -195,10 +181,7 @@ html, body {
 .loading-overlay.hidden {
     opacity: 0;
     visibility: hidden;
-    pointer-events: none;
-    transition: 0.5s;
 }
-
 
 .spinner-circular {
     width: 50px;
