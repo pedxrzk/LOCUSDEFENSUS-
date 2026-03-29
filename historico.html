@@ -83,22 +83,6 @@
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
 
-// Script para marcar o link ativo automaticamente (Versão Universal)
-const currentPath = window.location.pathname; // Pega o caminho completo da URL
-const menuLinks = document.querySelectorAll('.sidebar a');
-
-menuLinks.forEach(link => {
-    link.classList.remove('active'); // Limpa seleções anteriores
-    
-    const href = link.getAttribute('href');
-
-    // Verifica se a URL atual contém o nome da página ou se é a raiz (Home)
-    if (currentPath.includes(href) || (currentPath === "/" && href === "dashboard.html")) {
-        link.classList.add('active');
-    }
-});
-
-
 </script>
 </body>
 </html>
