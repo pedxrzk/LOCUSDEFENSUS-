@@ -6,69 +6,81 @@
     <title>Dashboard - Locus Defensus</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Garantindo que os cards de ação pareçam clicáveis */
+        .card-action {
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .card-action:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
 </head>
 <body>
 
 <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner-circular"></div>
-    <p>Carregando dashboard...</p>
+    <p>Sincronizando com o protótipo...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-   <nav class="sidebar" id="sidebar">
-    <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
-    <a href="dashboard.html" class="active"><i class="fas fa-chart-line"></i> Dashboard</a>
-    <a href="controle.html"><i class="fas fa-sliders"></i> Controle</a>
-    <a href="historico.html"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
-    <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
-    <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
-    <div class="user-info-group">
-        <p id="userSidebar"></p>
-        <div class="divider"></div>
-        <button id="logoutBtn" class="btn-danger">Sair</button>
-    </div>
-</nav>
-
+    <nav class="sidebar" id="sidebar">
+        <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
+        <a href="dashboard.html" class="active"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="controle.html"><i class="fas fa-sliders"></i> Controle</a>
+        <a href="historico.html"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
+        <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
+        <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
+        <div class="user-info-group">
+            <p id="userSidebar" style="font-size: 14px; font-weight: bold; color: #fff;"></p>
+            <div class="divider"></div>
+            <button id="logoutBtn" class="btn-danger">Sair</button>
+        </div>
+    </nav>
 
     <main class="main">
-    <header class="topbar">
-        <h2>Painel Principal</h2>
-        <p id="userTopbar" style="font-size: 12px; color: #666;"></p>
-    </header>
+        <header class="topbar">
+            <h2 id="tituloPainel">Painel de Monitoramento</h2>
+            <p id="userTopbar" style="font-size: 12px; color: #666;"></p>
+        </header>
 
-    <div class="cards">
-        <div class="card">
-            <h3>🌡️ TEMPERATURA</h3>
-            <p id="tempValue">25.7°C</p>
-        </div>
+        <div class="cards">
+            <div class="card">
+                <h3>🌡️ TEMPERATURA</h3>
+                <p id="tempValue">--.-°C</p>
+            </div>
 
-        <div class="card">
-            <h3>💧 UMIDADE</h3>
-            <p id="humiValue">55%</p>
-        </div>
+            <div class="card">
+                <h3>💧 UMIDADE</h3>
+                <p id="humiValue">--%</p>
+            </div>
 
-        <div class="card">
-            <h3>📊 PRESSÃO</h3>
-            <p id="presValue">Normal</p>
-        </div>
+            <div class="card">
+                <h3>📊 PRESSÃO</h3>
+                <p id="presValue">---</p>
+            </div>
 
-        <div class="card card-action" onclick="toggleBuzzer()">
-            <h3>🔊 BUZZER</h3>
-            <p id="buzzerStatus">Desligado</p>
-        </div>
+            <div class="card card-action" id="cardBuzzer">
+                <h3>🔊 BUZZER</h3>
+                <p id="buzzerStatus">Carregando...</p>
+            </div>
 
-        <div class="card card-action" onclick="toggleLED()">
-            <h3>💡 LED</h3>
-            <p id="ledStatus">Ligado</p>
+            <div class="card card-action" id="cardLed">
+                <h3>💡 LED</h3>
+                <p id="ledStatus">Carregando...</p>
+            </div>
         </div>
-    </div>
-</main>
+    </main>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
@@ -82,18 +94,78 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
     const loader = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
     const sidebar = document.getElementById('sidebar');
     const btnMenu = document.getElementById('menuToggle');
 
+    let serialAtual = "";
+
+    // 1. GERENCIAMENTO DE ESTADO DE LOGIN
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Extrai o serial (ex: 00001) do email fake (ex: 00001@locus.com)
+            serialAtual = user.email.split('@')[0];
+            
+            // Atualiza textos da interface
+            const label = "Protótipo SN: " + serialAtual.toUpperCase();
+            document.getElementById('userTopbar').textContent = label;
+            document.getElementById('userSidebar').textContent = label;
+            document.getElementById('tituloPainel').textContent = "Monitoramento " + serialAtual;
+
+            // Inicia a escuta dos dados na pasta correta: prototipos/00001
+            iniciarMonitoramento(serialAtual);
+            
+            forceShow();
+        } else {
+            window.location.replace("index.html");
+        }
+    });
+
+    // 2. ESCUTA EM TEMPO REAL (Firebase -> Site)
+    function iniciarMonitoramento(serial) {
+        const caminhoRef = ref(db, 'prototipos/' + serial);
+        
+        onValue(caminhoRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Sensores
+                document.getElementById('tempValue').textContent = (data.temperatura || "0") + "°C";
+                document.getElementById('humiValue').textContent = (data.umidade || "0") + "%";
+                document.getElementById('presValue').textContent = data.pressao || "Normal";
+                
+                // Atuadores (Status visual)
+                document.getElementById('buzzerStatus').textContent = data.buzzer ? "Ligado" : "Desligado";
+                document.getElementById('ledStatus').textContent = data.led ? "Ligado" : "Desligado";
+                
+                // Estilização dinâmica opcional
+                document.getElementById('ledStatus').style.color = data.led ? "#4ae3b5" : "#ff6b6b";
+                document.getElementById('buzzerStatus').style.color = data.buzzer ? "#4ae3b5" : "#ff6b6b";
+            } else {
+                console.log("Pasta do protótipo vazia ou não criada no Firebase.");
+            }
+        });
+    }
+
+    // 3. COMANDOS DE CONTROLE (Site -> Firebase)
+    document.getElementById('cardLed').onclick = () => {
+        const atual = document.getElementById('ledStatus').textContent === "Ligado";
+        set(ref(db, `prototipos/${serialAtual}/led`), !atual);
+    };
+
+    document.getElementById('cardBuzzer').onclick = () => {
+        const atual = document.getElementById('buzzerStatus').textContent === "Ligado";
+        set(ref(db, `prototipos/${serialAtual}/buzzer`), !atual);
+    };
+
+    // 4. FUNÇÕES DE INTERFACE (UI)
     function forceShow() {
         if(loader) loader.style.display = 'none';
         if(appEl) appEl.style.display = 'flex';
     }
 
-    // Lógica do Menu Mobile
     if(btnMenu) {
         btnMenu.onclick = (e) => {
             e.stopPropagation();
@@ -101,26 +173,18 @@
         };
     }
 
-    // Fechar ao clicar fora ou em links
     document.addEventListener('click', (e) => {
         if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
             sidebar.classList.remove('active');
         }
     });
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            if(document.getElementById('userTopbar')) document.getElementById('userTopbar').textContent = user.email;
-            if(document.getElementById('userSidebar')) document.getElementById('userSidebar').textContent = user.email;
-            forceShow();
-        } else {
-            window.location.replace("index.html");
-        }
-    });
+    document.getElementById('logoutBtn').onclick = () => {
+        signOut(auth).then(() => window.location.replace("index.html"));
+    };
 
-    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
-    
-    setTimeout(forceShow, 3000); // Segurança
+    // Segurança para garantir que a tela apareça se o Firebase demorar
+    setTimeout(forceShow, 4000);
 
 </script>
 </body>
