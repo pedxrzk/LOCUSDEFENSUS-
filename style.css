@@ -13,6 +13,7 @@
   --shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.12);
 }
 
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -20,54 +21,55 @@
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
 }
 
+/* BASE */
 html, body {
-  overflow-x: hidden;
-  min-height: 100vh;
-}
-
-body {
+  height: 100%;
   background: var(--background);
   color: var(--text);
 }
 
-/* ============================================
-   LAYOUT BASE - MOBILE FIRST
-   ============================================ */
+/* LAYOUT PRINCIPAL */
 .app {
-  display: flex;
+  display: flex; /* Alinha sidebar e main lado a lado no desktop */
   min-height: 100vh;
   width: 100%;
-  position: relative;
 }
 
-/* ============================================
-   SIDEBAR - COMPORTAMENTO MOBILE (DEFAULT)
-   ============================================ */
+/* SIDEBAR */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 280px;
-  height: 100vh;
+  width: 260px;
+  flex-shrink: 0; /* Impede a sidebar de "esmagar" */
   background: var(--primary);
   color: white;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  z-index: 1000;
-  transform: translateX(-100%);
+  height: 100vh;
+  position: sticky; /* Mantém a sidebar fixa ao rolar a página no desktop */
+  top: 0;
   transition: transform 0.3s ease;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  z-index: 1000;
 }
 
-.sidebar.active {
-  transform: translateX(0);
-}
-
-/* Logo */
-.logo-card {
+/* LINKS */
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  padding: 12px;
   border-radius: var(--radius);
+  margin-bottom: 8px;
+  display: block;
+  transition: 0.2s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: var(--primary-light);
+}
+
+/* LOGO */
+.logo-card {
+  border-radius: 20px;
   padding: 20px;
   margin-bottom: 25px;
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
@@ -79,309 +81,144 @@ body {
 .logo {
   width: 100%;
   max-width: 180px;
-  height: auto;
 }
 
-/* Links */
-.sidebar a {
-  color: white;
-  text-decoration: none;
-  padding: 14px 16px;
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 15px;
-  transition: all 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-  background: var(--primary-light);
-}
-
-/* Botão sair */
+/* BOTÃO SAIR */
 .btn-danger {
-  margin-top: auto;
-  padding: 14px;
-  border-radius: var(--radius);
+  margin-top: auto; /* Empurra o botão para o final da sidebar */
+  padding: 12px;
+  border-radius: 10px;
   border: none;
   background: var(--danger);
   color: white;
   cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.2s;
-  touch-action: manipulation;
+  transition: 0.2s;
 }
 
 .btn-danger:hover {
   background: var(--danger-dark);
 }
 
-/* ============================================
-   CONTEÚDO PRINCIPAL - MOBILE
-   ============================================ */
+/* CONTEÚDO PRINCIPAL */
 .main {
-  flex: 1;
-  width: 100%;
-  min-width: 0;
-  padding: 15px;
-  padding-top: 80px; /* Espaço para topbar */
-  margin-left: 0;
+  flex: 1; /* Ocupa todo o espaço restante do flexbox */
+  padding: 30px;
+  min-width: 0; /* Evita quebra de layout com conteúdos largos */
+  overflow-y: auto;
 }
 
-/* ============================================
-   TOPBAR - MOBILE
-   ============================================ */
+/* TOPBAR */
 .topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
   display: flex;
+  justify-content: space-between; /* Espaça título do email */
   align-items: center;
-  justify-content: space-between;
   background: white;
-  padding: 12px 15px;
+  padding: 20px 25px;
+  border-radius: var(--radius);
+  margin-bottom: 30px;
   box-shadow: var(--shadow);
-  min-height: 60px;
+}
+
+.topbar-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .topbar h2 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
   color: var(--primary);
-  margin: 0;
 }
 
 .user-email {
-  display: none; /* Escondido no mobile, mostra só email na sidebar */
+  font-size: 13px;
+  color: var(--muted);
 }
 
-/* Botão menu */
+/* MENU BUTTON (Escondido no Desktop) */
 .menu-btn {
   font-size: 24px;
   background: none;
   border: none;
   color: var(--primary);
   cursor: pointer;
-  padding: 8px;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  -webkit-tap-highlight-color: transparent;
+  display: none; /* Só aparece no mobile */
+  margin-right: 15px;
 }
 
-.menu-btn:hover {
-  background: var(--background);
-}
-
-/* ============================================
-   CARDS
-   ============================================ */
+/* GRID DE CARDS */
 .cards {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
 }
 
 .card {
   background: var(--card-bg);
-  padding: 20px;
+  padding: 25px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  transition: 0.3s;
+  border-left: 5px solid var(--primary-light);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-5px);
 }
 
 .card h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--primary);
+  font-size: 14px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
 .card p {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.5;
-  flex: 1;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--primary);
 }
 
-.card button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--primary);
-  color: white;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  width: 100%;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.card button:active {
-  transform: scale(0.98);
-}
-
-/* ============================================
-   OVERLAY
-   ============================================ */
+/* OVERLAY (Celular) */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  z-index: 999;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 998;
 }
 
-.overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
+/* 📱 RESPONSIVIDADE (Celular) */
+@media (max-width: 768px) {
+  .app {
+    display: block; /* Tira o layout lado a lado */
+  }
 
-/* ============================================
-   LOADING
-   ============================================ */
-.loading {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  z-index: 9999;
-}
+  .menu-btn {
+    display: block;
+  }
 
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* ============================================
-   DESKTOP - MEDIA QUERY
-   ============================================ */
-@media screen and (min-width: 1024px) {
-  /* Sidebar sempre visível em desktop */
   .sidebar {
     position: fixed;
-    transform: none;
-    width: 260px;
+    left: -260px; /* Esconde */
+    top: 0;
+    transition: 0.3s ease;
   }
-  
-  /* Main com margem para a sidebar */
-  .main {
-    margin-left: 260px;
-    padding: 30px;
-    padding-top: 30px;
+
+  .sidebar.active {
+    left: 0; /* Desliza para dentro */
   }
-  
-  /* Topbar não fixa em desktop */
-  .topbar {
-    position: relative;
-    margin-bottom: 25px;
-    border-radius: var(--radius);
-    padding: 20px;
-  }
-  
-  .topbar h2 {
-    font-size: 24px;
-  }
-  
-  .user-email {
+
+  .overlay.active {
     display: block;
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 4px;
   }
-  
-  /* Esconde botão menu em desktop */
-  .menu-btn {
-    display: none;
-  }
-  
-  /* Overlay nunca aparece em desktop */
-  .overlay {
-    display: none !important;
-  }
-  
-  /* Grid de cards em desktop */
-  .cards {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-}
 
-/* ============================================
-   TABLET (768px - 1023px)
-   ============================================ */
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-  .sidebar {
-    width: 240px;
-  }
-  
   .main {
-    margin-left: 240px;
     padding: 20px;
-    padding-top: 20px;
   }
-  
-  .sidebar {
-    transform: none;
-  }
-  
-  .menu-btn {
-    display: none;
-  }
-  
-  .overlay {
-    display: none !important;
-  }
-  
-  .topbar {
-    position: relative;
-    margin-bottom: 20px;
-  }
-  
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
-/* ============================================
-   CORREÇÃO ESPECIAL: MODO DESKTOP NO MOBILE
-   Quando o usuário ativa "Site para desktop" 
-   mas a tela é pequena fisicamente
-   ============================================ */
-@media screen and (max-width: 1023px) {
-  /* Garante que em telas menores que 1023px, 
-     independente do modo, o menu é drawer */
-  .sidebar:not(.active) {
-    transform: translateX(-100%);
+  .topbar {
+    justify-content: flex-start;
+    padding: 15px;
   }
 }
