@@ -195,8 +195,6 @@ html, body {
 .loading-overlay.hidden {
     opacity: 0;
     visibility: hidden;
-    pointer-events: none; /* Garante que o usuário consiga clicar no que está atrás */
-}
 }
 
 .spinner-circular {
