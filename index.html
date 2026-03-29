@@ -1,140 +1,152 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login - Locus Defensus</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-<style>
-body {
-    margin: 0;
-    height: 100vh;
-    font-family: Arial, sans-serif;
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    background:
-        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
-        url("background.jpg");
+        .login-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 30px;
+            box-sizing: border-box;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+        .logo {
+            width: 140px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        h2 {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
 
-.login-box {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 25px;
-    box-sizing: border-box;
-    border-radius: 15px;
-    width: 90%;        /* muda isso */
-    max-width: 380px;  /* adiciona isso */
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    text-align: center;
-}
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: none;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.9);
+        }
 
-.logo {
-    width: 140px;
-    margin-bottom: 1px;
-    border-radius: 100%;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
-}
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #143458;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-h2 {
-    color: white;
-}
+        button:disabled {
+            background: #0d233a;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
 
-input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: none; /* remove a borda */
-    outline: none;
-    box-sizing: border-box;
-    font-size: 14px;
-    transition: all 0.25s ease;
-}
+        .google-btn {
+            background: #e11d48; /* Tom de vermelho da sua imagem */
+            margin-top: 15px;
+        }
 
-/* efeito foco SEM aumentar tamanho */
-input:focus {
-    box-shadow: 0 0 0 2px #4facfe;
-}
+        /* O Spinner (Círculo de carregamento) */
+        .spinner {
+            display: none; /* Escondido por padrão */
+            margin-right: 10px;
+            font-size: 18px;
+        }
 
-button {
-    width: 100%;
-    padding: 10px;
-    background: #143458;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-}
+        .link {
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: block;
+        }
 
-button:hover {
-    background: #1b5e20;
-}
-
-.google-btn {
-    margin-top: 10px;
-    background: #db4437;
-}
-
-.link {
-    margin-top: 10px;
-    color: #ddd;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.error {
-    color: #ff6b6b;
-    margin-top: 10px;
-    display: none;
-}
-</style>
+        .error {
+            color: #ff6b6b;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+            background: rgba(0,0,0,0.2);
+            padding: 8px;
+            border-radius: 8px;
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="login-box">
+    <img src="logo.png" class="logo">
+    <h2 id="titulo">Acesse o sistema de monitoramento remoto</h2>
 
-<img src="logo.png" class="logo">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="senha" placeholder="Senha">
 
-<h2 id="titulo">Acesse o sistema de monitoramento remoto</h2>
+    <button id="btnPrincipal" onclick="acao()">
+        <i id="loaderIcon" class="fas fa-circle-notch fa-spin spinner"></i>
+        <span id="btnText">Entrar</span>
+    </button>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="senha" placeholder="Senha">
+    <button class="google-btn" onclick="loginGoogle()">
+        Entrar com Google
+    </button>
 
-<button id="btnPrincipal" onclick="acao()">Entrar</button>
+    <p class="link" onclick="esqueciSenha()">Esqueci minha senha</p>
+    <p class="link" id="toggleLink" onclick="trocarModo()">Não tem conta? Cadastre-se</p>
 
-<button class="google-btn" onclick="loginGoogle()">
-  Entrar com Google
-</button>
-
-<p class="link" onclick="esqueciSenha()">Esqueci minha senha</p>
-<p class="link" id="toggleLink" onclick="trocarModo()">Não tem conta? Cadastre-se</p>
-
-<p class="error" id="erro"></p>
-
+    <p class="error" id="erro"></p>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signInWithPopup,
-  GoogleAuthProvider,
-  setPersistence,
-  browserLocalPersistence
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider,
+  setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-// Firebase config
+
 const firebaseConfig = {
     apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
     authDomain: "coleta-7fecd.firebaseapp.com",
@@ -151,29 +163,41 @@ const provider = new GoogleAuthProvider();
 
 let modo = "login";
 
-/* TROCAR MODO */
+// Função para controlar o estado de carregamento do botão
+function setButtonLoading(isLoading) {
+    const btn = document.getElementById("btnPrincipal");
+    const icon = document.getElementById("loaderIcon");
+    const text = document.getElementById("btnText");
+
+    if (isLoading) {
+        btn.disabled = true;
+        icon.style.display = "inline-block";
+        text.innerText = "Aguardando...";
+    } else {
+        btn.disabled = false;
+        icon.style.display = "none";
+        text.innerText = modo === "login" ? "Entrar" : "Cadastrar";
+    }
+}
+
 window.trocarModo = function () {
     let titulo = document.getElementById("titulo");
-    let botao = document.getElementById("btnPrincipal");
     let link = document.getElementById("toggleLink");
     let erro = document.getElementById("erro");
-
     erro.style.display = "none";
 
     if (modo === "login") {
         modo = "cadastro";
         titulo.innerText = "Cadastro";
-        botao.innerText = "Cadastrar";
         link.innerText = "Já tem conta? Entrar";
     } else {
         modo = "login";
         titulo.innerText = "Acesse o sistema de monitoramento remoto";
-        botao.innerText = "Entrar";
         link.innerText = "Não tem conta? Cadastre-se";
     }
+    setButtonLoading(false);
 };
 
-/* LOGIN / CADASTRO */
 window.acao = function () {
     let email = document.getElementById("email").value;
     let senha = document.getElementById("senha").value;
@@ -187,6 +211,8 @@ window.acao = function () {
         return;
     }
 
+    setButtonLoading(true); // Ativa o spinner e muda o texto
+
     if (modo === "cadastro") {
         createUserWithEmailAndPassword(auth, email, senha)
             .then(() => {
@@ -194,80 +220,46 @@ window.acao = function () {
                 trocarModo();
             })
             .catch((error) => {
+                setButtonLoading(false);
                 erro.innerText = traduzirErro(error.code);
                 erro.style.display = "block";
             });
-
     } else {
-        // 🔥 CORREÇÃO AQUI
         setPersistence(auth, browserLocalPersistence)
-            .then(() => {
-                return signInWithEmailAndPassword(auth, email, senha);
-            })
+            .then(() => signInWithEmailAndPassword(auth, email, senha))
             .then(() => {
                 window.location.href = "dashboard.html";
             })
             .catch((error) => {
+                setButtonLoading(false);
                 erro.innerText = traduzirErro(error.code);
                 erro.style.display = "block";
             });
     }
 };
-/* ESQUECI SENHA */
+
+window.loginGoogle = function () {
+    signInWithPopup(auth, provider)
+        .then(() => window.location.href = "dashboard.html")
+        .catch((error) => alert(error.message));
+};
+
 window.esqueciSenha = function () {
     let email = document.getElementById("email").value;
-    let erro = document.getElementById("erro");
-
-    erro.style.display = "none";
-
-    if (!email) {
-        erro.innerText = "Digite seu email primeiro";
-        erro.style.display = "block";
-        return;
-    }
-
+    if (!email) { alert("Digite seu email"); return; }
     sendPasswordResetEmail(auth, email)
-        .then(() => alert("Email de recuperação enviado 🚀"))
-        .catch((error) => {
-            erro.innerText = traduzirErro(error.code);
-            erro.style.display = "block";
-        });
+        .then(() => alert("Email enviado!"))
+        .catch((err) => alert(err.code));
 };
 
-/* GOOGLE LOGIN */
-window.loginGoogle = function () {
-    setPersistence(auth, browserLocalPersistence)
-        .then(() => {
-            return signInWithPopup(auth, provider);
-        })
-        .then(() => {
-            window.location.href = "./dashboard.html";
-        })
-        .catch((error) => {
-            let erro = document.getElementById("erro");
-            erro.innerText = error.message;
-            erro.style.display = "block";
-        });
-};
-
-/* ERROS */
 function traduzirErro(code) {
     switch (code) {
-        case "auth/email-already-in-use":
-            return "Esse email já está em uso";
-        case "auth/invalid-email":
-            return "Email inválido";
-        case "auth/weak-password":
-            return "Senha muito fraca (mínimo 6 caracteres)";
-        case "auth/user-not-found":
-            return "Usuário não encontrado";
-        case "auth/wrong-password":
-            return "Senha incorreta";
-        default:
-            return "Erro: " + code;
+        case "auth/email-already-in-use": return "E-mail já cadastrado";
+        case "auth/invalid-credential": return "E-mail ou senha incorretos";
+        case "auth/weak-password": return "Senha muito fraca";
+        default: return "Erro ao tentar acessar";
     }
 }
 </script>
-
 </body>
 </html>
