@@ -223,3 +223,30 @@ html, body {
   .main { padding: 20px; }
   .topbar { justify-content: flex-start; padding: 15px; }
 }
+/* Links da Sidebar */
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 15px; /* Aumentamos o preenchimento interno */
+    border-radius: var(--radius);
+    margin-bottom: 5px;
+    display: flex;      /* Mantém ícone e texto na mesma linha */
+    align-items: center;
+    transition: 0.3s;
+    background: transparent; /* Por padrão, sem fundo */
+}
+
+/* Efeito de Hover e Página Ativa (O SELELECIONADO) */
+.sidebar a:hover,
+.sidebar a.active {
+    background: var(--primary-light) !important; /* Cor azul clara de destaque */
+    font-weight: 500;
+}
+
+/* Garante que o ícone acompanhe o destaque */
+.sidebar a i {
+    width: 25px;
+    margin-right: 12px;
+    text-align: center;
+}
+
