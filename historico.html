@@ -3,9 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Histórico - Limno</title>
+    <title>Histórico - Locus Defensus</title>
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        /* Estilos específicos para os cards de histórico */
+        .simulacao {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .simulacao button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-abrir { background: #16a34a; }
+        .btn-fechar { background: #dc2626; }
+        .simulacao button:active { transform: scale(0.95); }
+
+        .card-historico {
+            border-left: 5px solid var(--primary-light);
+            margin-bottom: 15px;
+        }
+
+        .card-historico.aberta { border-left-color: #16a34a; }
+        .card-historico.fechada { border-left-color: #dc2626; }
+        
+        .card-historico h3 { font-size: 14px; color: var(--muted); }
+        .card-historico p { font-size: 18px; font-weight: bold; margin: 5px 0; }
+    </style>
 </head>
 <body>
 
@@ -18,28 +58,37 @@
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
     <nav class="sidebar" id="sidebar">
-    <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
-    <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
-    <a href="controle.html"><i class="fas fa-sliders"></i> Controle</a>
-    <a href="historico.html" class="active"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
-    <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
-    <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
-    <div class="user-info-group">
-        <p id="userSidebar"></p>
-        <div class="divider"></div>
-        <button id="logoutBtn" class="btn-danger">Sair</button>
-    </div>
-</nav>
+        <div class="logo-card"><img src="logo.sidebar.png" class="logo"></div>
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="controle.html"><i class="fas fa-sliders"></i> Controle</a>
+        <a href="historico.html" class="active"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
+        <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
+        <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
+        
+        <div class="user-info-group">
+            <p id="userSidebar" style="font-size: 11px; color: #ccc; margin-bottom: 8px; padding-left: 12px;"></p>
+            <div class="divider"></div>
+            <button id="logoutBtn" class="btn-danger">Sair</button>
+        </div>
+    </nav>
 
     <main class="main">
         <header class="topbar">
-            <h2>Histórico de Dados</h2>
+            <h2>Histórico de Acesso</h2>
             <p id="userTopbar" style="font-size: 12px; color: #666;"></p>
         </header>
-        <div class="cards" id="historicoCards">
-            <article class="card"><h3>25/03/2026</h3><p style="font-size: 18px;">Temp: 26.5°C</p><small style="color:var(--muted)">14:32</small></article>
-            <article class="card"><h3>25/03/2026</h3><p style="font-size: 18px;">Temp: 25.8°C</p><small style="color:var(--muted)">10:15</small></article>
+
+        <div class="simulacao">
+            <button class="btn-abrir" id="btnAbrir">
+                <i class="fas fa-door-open"></i> Abrir Porta
+            </button>
+            <button class="btn-fechar" id="btnFechar">
+                <i class="fas fa-door-closed"></i> Fechar Porta
+            </button>
         </div>
+
+        <div class="cards" id="historicoCards">
+            </div>
     </main>
 </div>
 
@@ -64,15 +113,57 @@
     const appEl = document.getElementById('app');
     const sidebar = document.getElementById('sidebar');
     const btnMenu = document.getElementById('menuToggle');
+    const container = document.getElementById('historicoCards');
 
+    // Funções de Interface
     if(btnMenu) {
         btnMenu.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); };
     }
 
+    // Lógica do Histórico (LocalStorage combinada com Identidade Firebase)
+    function criarCard(tipo, data, hora) {
+        const article = document.createElement('article');
+        article.classList.add('card', 'card-historico', tipo);
+        
+        const icone = tipo === 'aberta' ? 'fa-door-open' : 'fa-door-closed';
+        const texto = tipo === 'aberta' ? 'Porta Aberta' : 'Porta Fechada';
+
+        article.innerHTML = `
+            <h3>${data}</h3>
+            <p><i class="fas ${icone}"></i> ${texto}</p>
+            <small style="color:var(--muted)">${hora}</small>
+        `;
+        return article;
+    }
+
+    function registrarEvento(tipo) {
+        const agora = new Date();
+        const data = agora.toLocaleDateString('pt-BR');
+        const hora = agora.toLocaleTimeString('pt-BR');
+
+        // Salvar localmente
+        const historico = JSON.parse(localStorage.getItem('historico_locus')) || [];
+        historico.unshift({ tipo, data, hora });
+        localStorage.setItem('historico_locus', JSON.stringify(historico));
+
+        // Adicionar na tela
+        container.prepend(criarCard(tipo, data, hora));
+    }
+
+    function carregarHistorico() {
+        const historico = JSON.parse(localStorage.getItem('historico_locus')) || [];
+        container.innerHTML = '';
+        historico.forEach(item => {
+            container.appendChild(criarCard(item.tipo, item.data, item.hora));
+        });
+    }
+
+    // Monitor de Autenticação
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('userSidebar').textContent = user.email;
             document.getElementById('userTopbar').textContent = user.email;
+            carregarHistorico();
             loader.style.display = 'none';
             appEl.style.display = 'flex';
         } else {
@@ -80,6 +171,9 @@
         }
     });
 
+    // Eventos dos Botões
+    document.getElementById('btnAbrir').onclick = () => registrarEvento('aberta');
+    document.getElementById('btnFechar').onclick = () => registrarEvento('fechada');
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
 
 </script>
