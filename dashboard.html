@@ -102,6 +102,17 @@
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
     
     setTimeout(forceShow, 3000); // Segurança
+
+// Script para marcar o link ativo automaticamente
+const currentPage = window.location.pathname.split("/").pop();
+const menuLinks = document.querySelectorAll('.sidebar a');
+
+menuLinks.forEach(link => {
+    if (link.getAttribute('href') === currentPage) {
+        link.classList.add('active');
+    }
+});
+
 </script>
 </body>
 </html>
