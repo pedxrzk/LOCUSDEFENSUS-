@@ -62,26 +62,25 @@
 <div class="app" id="app" style="display: none;">
 
     <nav class="sidebar" id="sidebar">
-        <div class="logo-card">
-            <img src="logo.sidebar.png" alt="Limno Logo" class="logo" onerror="this.style.display='none'">
-            <span style="font-size: 24px; font-weight: bold; color: white; display: none;" id="logoFallback">LIMNO</span>
-        </div>
+    <div class="logo-card">
+        <img src="logo.sidebar.png" alt="Limno Logo" class="logo">
+    </div>
 
-        <a href="dashboard.html">📊 Dashboard</a>
-        <a href="controle.html">🎮 Controle</a>
-        <a href="historico.html">📜 Histórico</a>
-        <a href="quem.html" class="active">👥 Quem Somos</a>
-        <a href="sobre.html">ℹ️ Sobre</a>
+    <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+    <a href="controle.html"><i class="fa-solid fa-sliders"></i> Controle</a>
+    <a href="historico.html"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</a>
+    <a href="quem.html"><i class="fa-solid fa-users"></i> Quem Somos</a>
+    <a href="sobre.html"><i class="fa-solid fa-circle-info"></i> Sobre</a>
 
-        <div style="margin-top: 20px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
-                carregando...
-            </p>
-            <button class="btn-danger" id="logoutBtn" style="width: 100%;">
-                🚪 Sair
-            </button>
-        </div>
-    </nav>
+    <div style="margin-top: 30px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+    <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; word-break: break-all;" id="userSidebar">
+        seu-email@gmail.com
+    </p>
+    <button class="btn-danger" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+    </button>
+</div>
+</nav>
 
     <div class="overlay" id="overlay"></div>
 
