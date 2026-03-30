@@ -20,7 +20,7 @@
             flex: 1;
             padding: 15px;
             border: none;
-            border-radius: var(--radius);
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
             color: white;
@@ -36,14 +36,14 @@
         .simulacao button:active { transform: scale(0.95); }
 
         .card-historico {
-            border-left: 5px solid var(--primary-light);
+            border-left: 5px solid #143458;
             margin-bottom: 15px;
         }
 
         .card-historico.aberta { border-left-color: #16a34a; }
         .card-historico.fechada { border-left-color: #dc2626; }
         
-        .card-historico h3 { font-size: 14px; color: var(--muted); }
+        .card-historico h3 { font-size: 14px; color: #666; }
         .card-historico p { font-size: 18px; font-weight: bold; margin: 5px 0; }
     </style>
 </head>
@@ -66,7 +66,7 @@
         <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
         
         <div class="user-info-group">
-            <p id="userSidebar" style="font-size: 11px; color: #ccc; margin-bottom: 8px; padding-left: 12px;"></p>
+            <p id="userSidebar" style="font-size: 14px; font-weight: bold; color: #fff;"></p>
             <div class="divider"></div>
             <button id="logoutBtn" class="btn-danger">Sair</button>
         </div>
@@ -80,15 +80,14 @@
 
         <div class="simulacao">
             <button class="btn-abrir" id="btnAbrir">
-                <i class="fas fa-door-open"></i> Abrir Porta
+                <i class="fas fa-door-open"></i> Simular Abrir
             </button>
             <button class="btn-fechar" id="btnFechar">
-                <i class="fas fa-door-closed"></i> Fechar Porta
+                <i class="fas fa-door-closed"></i> Simular Fechar
             </button>
         </div>
 
-        <div class="cards" id="historicoCards">
-            </div>
+        <div class="cards" id="historicoCards"></div>
     </main>
 </div>
 
@@ -115,15 +114,25 @@
     const btnMenu = document.getElementById('menuToggle');
     const container = document.getElementById('historicoCards');
 
-    // Funções de Interface
-    if(btnMenu) {
-        btnMenu.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); };
-    }
+    // Monitor de Autenticação e Padronização do ID
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const serialLogado = user.email.split('@')[0];
+            const label = "Protótipo: " + serialLogado.toUpperCase();
+            
+            document.getElementById('userSidebar').textContent = label;
+            document.getElementById('userTopbar').textContent = label;
+            
+            carregarHistorico();
+            forceShow();
+        } else {
+            window.location.replace("index.html");
+        }
+    });
 
-    // Lógica do Histórico (LocalStorage combinada com Identidade Firebase)
     function criarCard(tipo, data, hora) {
         const article = document.createElement('article');
-        article.classList.add('card', 'card-historico', tipo);
+        article.className = `card card-historico ${tipo}`;
         
         const icone = tipo === 'aberta' ? 'fa-door-open' : 'fa-door-closed';
         const texto = tipo === 'aberta' ? 'Porta Aberta' : 'Porta Fechada';
@@ -131,7 +140,7 @@
         article.innerHTML = `
             <h3>${data}</h3>
             <p><i class="fas ${icone}"></i> ${texto}</p>
-            <small style="color:var(--muted)">${hora}</small>
+            <small style="color:#999">${hora}</small>
         `;
         return article;
     }
@@ -141,12 +150,10 @@
         const data = agora.toLocaleDateString('pt-BR');
         const hora = agora.toLocaleTimeString('pt-BR');
 
-        // Salvar localmente
         const historico = JSON.parse(localStorage.getItem('historico_locus')) || [];
         historico.unshift({ tipo, data, hora });
         localStorage.setItem('historico_locus', JSON.stringify(historico));
 
-        // Adicionar na tela
         container.prepend(criarCard(tipo, data, hora));
     }
 
@@ -158,46 +165,27 @@
         });
     }
 
-    // Monitor de Autenticação
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            document.getElementById('userSidebar').textContent = user.email;
-            document.getElementById('userTopbar').textContent = user.email;
-            carregarHistorico();
-            loader.style.display = 'none';
-            appEl.style.display = 'flex';
-        } else {
-            window.location.replace("index.html");
-        }
-    });
+    function forceShow() {
+        if(loader) loader.style.display = 'none';
+        if(appEl) appEl.style.display = 'flex';
+    }
 
-    // Eventos dos Botões
-    document.getElementById('btnAbrir').onclick = () => registrarEvento('aberta');
-    document.getElementById('btnFechar').onclick = () => registrarEvento('fechada');
-    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
+    // Eventos de Interface
+    if(btnMenu) {
+        btnMenu.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); };
+    }
 
- // Fechar ao clicar fora ou em links
     document.addEventListener('click', (e) => {
         if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
             sidebar.classList.remove('active');
         }
     });
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            if(document.getElementById('userTopbar')) document.getElementById('userTopbar').textContent = user.email;
-            if(document.getElementById('userSidebar')) document.getElementById('userSidebar').textContent = user.email;
-            forceShow();
-        } else {
-            window.location.replace("index.html");
-        }
-    });
-
+    document.getElementById('btnAbrir').onclick = () => registrarEvento('aberta');
+    document.getElementById('btnFechar').onclick = () => registrarEvento('fechada');
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
-    
-    setTimeout(forceShow, 3000); // Segurança
-    
 
+    setTimeout(forceShow, 3000);
 </script>
 </body>
 </html>
