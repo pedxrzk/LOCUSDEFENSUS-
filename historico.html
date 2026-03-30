@@ -10,14 +10,38 @@
         .card-historico {
             border-left: 5px solid #143458;
             margin-bottom: 12px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             animation: fadeIn 0.4s ease;
         }
-        .card-historico.aberta { border-left-color: #ff6b6b; } /* Alerta: Porta Aberta */
-        .card-historico.fechada { border-left-color: #4ae3b5; } /* Seguro: Porta Fechada */
+        .card-historico.aberta { border-left-color: #ff6b6b; }
+        .card-historico.fechada { border-left-color: #4ae3b5; }
         
         .card-historico h3 { font-size: 13px; color: #888; margin: 0; }
         .card-historico p { font-size: 16px; font-weight: bold; margin: 5px 0; color: #143458; }
-        .card-historico small { color: #aaa; display: block; margin-top: 5px; }
+        
+        /* Grid para as informações ambientais */
+        .info-extras {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            color: #555;
+            text-align: center;
+        }
+        .info-item i { margin-bottom: 3px; color: #143458; }
+        .info-item span { font-weight: bold; color: #333; }
+
+        .card-historico small { color: #aaa; display: block; margin-top: 8px; font-size: 11px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -26,7 +50,7 @@
 
 <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner-circular"></div>
-    <p>Sincronizando com Firebase...</p>
+    <p>Sincronizando registros...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
@@ -48,12 +72,12 @@
 
     <main class="main">
         <header class="topbar">
-            <h2>Registros do Reed Switch</h2>
+            <h2>Registros de Acesso</h2>
             <p id="userTopbar" style="font-size: 11px; color: #888;"></p>
         </header>
 
         <div class="cards" id="historicoCards">
-             <p style='text-align:center; color:#999; padding: 40px;'>Conectando ao sensor porta...</p>
+             <p style='text-align:center; color:#999; padding: 40px;'>Conectando ao sistema...</p>
         </div>
     </main>
 </div>
@@ -96,44 +120,47 @@
     });
 
     async function ativarLogsReais(serial) {
+        const rootRef = ref(db, `prototipos/${serial}`);
         const portaRef = ref(db, `prototipos/${serial}/porta`);
         const logsRef = ref(db, `prototipos/${serial}/logs_acesso`);
 
-        // 1. ESCUTA O SENSOR (REED SWITCH)
-        onValue(portaRef, (snapshot) => {
+        // ESCUTA A MUDANÇA DA PORTA E BUSCA DADOS AMBIENTAIS
+        onValue(portaRef, async (snapshot) => {
             const val = snapshot.val();
             const statusAtual = (val === true || val === "aberta") ? "aberta" : "fechada";
             
-            // GRAVA MUDANÇA: Só se o status mudar e não for a primeira carga nula
             if (ultimaPortaStatus !== null && ultimaPortaStatus !== statusAtual) {
+                // LER OS DADOS DE TEMPERATURA/UMIDADE/PRESSÃO ANTES DE SALVAR O LOG
+                const snapshotDados = await get(rootRef);
+                const dadosAtuais = snapshotDados.val();
+
                 const agora = new Date();
                 push(logsRef, {
                     tipo: statusAtual,
                     data: agora.toLocaleDateString('pt-BR'),
                     hora: agora.toLocaleTimeString('pt-BR'),
+                    // Pega as chaves exatas do seu Firebase: temperatura, umidade, pressao
+                    temp: dadosAtuais.temperatura || 0,
+                    umid: dadosAtuais.umidade || 0,
+                    pres: dadosAtuais.pressao || 0,
                     timestamp: serverTimestamp()
                 });
             }
             ultimaPortaStatus = statusAtual;
         });
 
-        // 2. EXIBE OS LOGS NA TELA
+        // EXIBE OS LOGS NA TELA
         const consultaLogs = query(logsRef, limitToLast(30));
         onValue(consultaLogs, (snapshot) => {
             container.innerHTML = "";
             const data = snapshot.val();
             
             if (data) {
-                // Converte objeto em array e inverte (mais novos primeiro)
                 Object.values(data).reverse().forEach(log => {
                     renderizarCard(log);
                 });
             } else {
-                container.innerHTML = `
-                    <div style="text-align:center; padding: 40px; color: #999;">
-                        <i class="fas fa-info-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
-                        <p>Nenhum log gerado ainda.<br><small>Mova o sensor magnético para registrar.</small></p>
-                    </div>`;
+                container.innerHTML = "<p style='text-align:center; color:#999; padding: 40px;'>Nenhum log gerado ainda.</p>";
             }
         });
     }
@@ -147,6 +174,22 @@
         article.innerHTML = `
             <h3>${item.data}</h3>
             <p><i class="fas ${icone}"></i> ${texto}</p>
+            
+            <div class="info-extras">
+                <div class="info-item">
+                    <i class="fas fa-thermometer-half"></i>
+                    <span>${item.temp}°C</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-droplet"></i>
+                    <span>${item.umid}%</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-gauge-high"></i>
+                    <span>${item.pres} hPa</span>
+                </div>
+            </div>
+            
             <small><i class="fas fa-clock"></i> Registro: ${item.hora}</small>
         `;
         container.appendChild(article);
