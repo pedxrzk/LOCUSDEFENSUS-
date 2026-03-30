@@ -13,7 +13,7 @@
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
-            margin-bottom: 20px;
+            margin: 10px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.05);
         }
 
@@ -93,7 +93,7 @@
         <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
         <a href="sobre.html" class="active"><i class="fas fa-circle-info"></i> Sobre</a>
         <div class="user-info-group">
-            <p id="userSidebar"></p>
+            <p id="userSidebar" style="font-weight: bold; color: white;"></p>
             <div class="divider"></div>
             <button id="logoutBtn" class="btn-danger">Sair</button>
         </div>
@@ -113,8 +113,8 @@
                 </div>
                 <div style="text-align: right; color: #999; font-size: 12px;">
                     <b>ESP32 DevKit</b><br>
-                    <b>BMP280</b><br>
-                    <b>V1.0.0</b>
+                    <b>BME280 Sensor</b><br>
+                    <b>V1.0.1</b>
                 </div>
             </div>
 
@@ -134,7 +134,7 @@
                     <div class="objectives-box">
                         <ul>
                             <li>Fornecer monitoramento remoto preciso e confiável em tempo real.</li>
-                            <li>Garantir visualização rápida dos dados em qualquer dispositivo mobile.</li>
+                            <li>Garantir segurança através de alertas sonoros e monitoramento de porta.</li>
                             <li>Servir como base para futuras expansões de automação hospitalar.</li>
                         </ul>
                     </div>
@@ -144,7 +144,7 @@
             <div class="spec-item" style="margin-top: 30px;">
                 <h4>Segurança e Backend</h4>
                 <p style="font-size: 14px; color: #666; line-height: 1.6;">
-                    O sistema utiliza autenticação segura via Firebase Auth, garantindo que apenas usuários autorizados tenham acesso aos controles do Buzzer e LED. O backend processa as requisições com baixa latência, ideal para ambientes que exigem resposta imediata.
+                    O sistema utiliza autenticação segura via Firebase Auth, garantindo que apenas usuários autorizados tenham acesso aos controles do Buzzer e Ventoinha. O backend processa as requisições com baixa latência, ideal para ambientes que exigem resposta imediata como o armazenamento de insumos médicos.
                 </p>
             </div>
         </div>
@@ -170,45 +170,44 @@
     const sidebar = document.getElementById('sidebar');
     const btnMenu = document.getElementById('menuToggle');
 
-    if(btnMenu) {
-        btnMenu.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); };
+    function forceShow() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
     }
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            document.getElementById('userSidebar').textContent = user.email;
-            document.getElementById('userTopbar').textContent = user.email;
-            document.getElementById('loadingOverlay').style.display = 'none';
-            document.getElementById('app').style.display = 'flex';
-        } else {
-            window.location.replace("index.html");
-        }
-    });
-
-    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
-
- // Fechar ao clicar fora ou em links
-    document.addEventListener('click', (e) => {
-        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
-            sidebar.classList.remove('active');
-        }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            if(document.getElementById('userTopbar')) document.getElementById('userTopbar').textContent = user.email;
-            if(document.getElementById('userSidebar')) document.getElementById('userSidebar').textContent = user.email;
+            // Extrai o ID limpo (ex: 00001)
+            const serialLogado = user.email.split('@')[0];
+            const label = "Protótipo: " + serialLogado.toUpperCase();
+            
+            document.getElementById('userSidebar').textContent = label;
+            document.getElementById('userTopbar').textContent = label;
+            
             forceShow();
         } else {
             window.location.replace("index.html");
         }
     });
 
+    // Toggle Sidebar
+    if(btnMenu) {
+        btnMenu.onclick = (e) => { 
+            e.stopPropagation(); 
+            sidebar.classList.toggle('active'); 
+        };
+    }
+
+    // Fechar Sidebar ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
+            sidebar.classList.remove('active');
+        }
+    });
+
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
     
-    setTimeout(forceShow, 3000); // Segurança
-    
-
+    setTimeout(forceShow, 4000); // Segurança aumentada para 4s
 </script>
 </body>
 </html>
