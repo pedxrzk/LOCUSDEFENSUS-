@@ -92,7 +92,7 @@
         <a href="quem.html" class="active"><i class="fas fa-users"></i> Quem Somos</a>
         <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
         <div class="user-info-group">
-            <p id="userSidebar"></p>
+            <p id="userSidebar" style="font-weight: bold; color: white;"></p>
             <div class="divider"></div>
             <button id="logoutBtn" class="btn-danger">Sair</button>
         </div>
@@ -107,7 +107,7 @@
                 </div>
                 <div class="badge-info">
                     <p>FMM — 3º EM</p>
-                    <p>Projeto Locus Defensus</p>
+                    <p id="idLabel">Protótipo: ---</p>
                 </div>
             </header>
 
@@ -162,44 +162,44 @@
     const sidebar = document.getElementById('sidebar');
     const btnMenu = document.getElementById('menuToggle');
 
-    if(btnMenu) {
-        btnMenu.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('active'); };
+    function forceShow() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
     }
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            document.getElementById('userSidebar').textContent = user.email;
-            document.getElementById('loadingOverlay').style.display = 'none';
-            document.getElementById('app').style.display = 'flex';
-        } else {
-            window.location.replace("index.html");
-        }
-    });
-
-    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
-
- // Fechar ao clicar fora ou em links
-    document.addEventListener('click', (e) => {
-        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
-            sidebar.classList.remove('active');
-        }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            if(document.getElementById('userTopbar')) document.getElementById('userTopbar').textContent = user.email;
-            if(document.getElementById('userSidebar')) document.getElementById('userSidebar').textContent = user.email;
+            // Extrai o ID e formata igual às outras telas
+            const serialLogado = user.email.split('@')[0];
+            const label = "Protótipo: " + serialLogado.toUpperCase();
+            
+            document.getElementById('userSidebar').textContent = label;
+            if(document.getElementById('idLabel')) document.getElementById('idLabel').textContent = label;
+            
             forceShow();
         } else {
             window.location.replace("index.html");
         }
     });
 
+    // Toggle Sidebar
+    if(btnMenu) {
+        btnMenu.onclick = (e) => { 
+            e.stopPropagation(); 
+            sidebar.classList.toggle('active'); 
+        };
+    }
+
+    // Fechar Sidebar ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
+            sidebar.classList.remove('active');
+        }
+    });
+
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
     
     setTimeout(forceShow, 3000); // Segurança
-    
-
 </script>
 </body>
 </html>
