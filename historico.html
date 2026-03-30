@@ -107,7 +107,7 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             const serialLogado = user.email.split('@')[0];
-            const label = "Protótipo SN: " + serialLogado.toUpperCase();
+            const label = "Protótipo: " + serialLogado.toUpperCase();
             document.getElementById('userSidebar').textContent = label;
             document.getElementById('userTopbar').textContent = label;
             
