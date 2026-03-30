@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* Garantindo que os cards de ação pareçam clicáveis */
+        /* Estilos para interatividade dos cards */
         .card-action {
             cursor: pointer;
             transition: transform 0.2s, background 0.2s;
@@ -16,13 +16,25 @@
             transform: scale(0.95);
             background: rgba(255, 255, 255, 0.2);
         }
+
+        /* Alerta visual para porta aberta */
+        .alerta-critico {
+            border: 2px solid #ff6b6b !important;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+        }
     </style>
 </head>
 <body>
 
 <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner-circular"></div>
-    <p>Sincronizando com o protótipo...</p>
+    <p>Sincronizando com o protótipo Locus Defensus...</p>
 </div>
 
 <div class="app" id="app" style="display: none;">
@@ -35,6 +47,7 @@
         <a href="historico.html"><i class="fas fa-clock-rotate-left"></i> Histórico</a>
         <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
         <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
+        
         <div class="user-info-group">
             <p id="userSidebar" style="font-size: 14px; font-weight: bold; color: #fff;"></p>
             <div class="divider"></div>
@@ -61,17 +74,22 @@
 
             <div class="card">
                 <h3>📊 PRESSÃO</h3>
-                <p id="presValue">---</p>
+                <p id="presValue">---- hPa</p>
+            </div>
+
+            <div class="card" id="cardPorta">
+                <h3>🚪 ESTADO DA PORTA</h3>
+                <p id="doorStatus">Carregando...</p>
+            </div>
+
+            <div class="card card-action" id="cardFan">
+                <h3>🌀 VENTOINHA</h3>
+                <p id="fanStatus">---</p>
             </div>
 
             <div class="card card-action" id="cardBuzzer">
-                <h3>🔊 BUZZER</h3>
-                <p id="buzzerStatus">Carregando...</p>
-            </div>
-
-            <div class="card card-action" id="cardLed">
-                <h3>💡 LED</h3>
-                <p id="ledStatus">Carregando...</p>
+                <h3>🔊 BUZZER (ALERTA)</h3>
+                <p id="buzzerStatus">---</p>
             </div>
         </div>
     </main>
@@ -103,28 +121,25 @@
 
     let serialAtual = "";
 
-    // 1. GERENCIAMENTO DE ESTADO DE LOGIN
+    // 1. GERENCIAMENTO DE LOGIN E IDENTIFICAÇÃO (Formatado)
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Extrai o serial (ex: 00001) do email fake (ex: 00001@locus.com)
             serialAtual = user.email.split('@')[0];
             
-            // Atualiza textos da interface
-            const label = "Protótipo SN: " + serialAtual.toUpperCase();
+            // Define o rótulo bonito (ex: Protótipo: 00001)
+            const label = "Protótipo: " + serialAtual.toUpperCase();
             document.getElementById('userTopbar').textContent = label;
             document.getElementById('userSidebar').textContent = label;
             document.getElementById('tituloPainel').textContent = "Monitoramento " + serialAtual;
-
-            // Inicia a escuta dos dados na pasta correta: prototipos/00001
-            iniciarMonitoramento(serialAtual);
             
+            iniciarMonitoramento(serialAtual);
             forceShow();
         } else {
             window.location.replace("index.html");
         }
     });
 
-    // 2. ESCUTA EM TEMPO REAL (Firebase -> Site)
+    // 2. MONITORAMENTO EM TEMPO REAL
     function iniciarMonitoramento(serial) {
         const caminhoRef = ref(db, 'prototipos/' + serial);
         
@@ -134,33 +149,44 @@
                 // Sensores
                 document.getElementById('tempValue').textContent = (data.temperatura || "0") + "°C";
                 document.getElementById('humiValue').textContent = (data.umidade || "0") + "%";
-                document.getElementById('presValue').textContent = data.pressao || "Normal";
+                document.getElementById('presValue').textContent = (data.pressao || "0") + " hPa";
                 
-                // Atuadores (Status visual)
-                document.getElementById('buzzerStatus').textContent = data.buzzer ? "Ligado" : "Desligado";
-                document.getElementById('ledStatus').textContent = data.led ? "Ligado" : "Desligado";
+                // Porta
+                const portaAberta = data.porta === true || data.porta === "aberta";
+                const doorTxt = document.getElementById('doorStatus');
+                const doorCard = document.getElementById('cardPorta');
                 
-                // Estilização dinâmica opcional
-                document.getElementById('ledStatus').style.color = data.led ? "#4ae3b5" : "#ff6b6b";
-                document.getElementById('buzzerStatus').style.color = data.buzzer ? "#4ae3b5" : "#ff6b6b";
-            } else {
-                console.log("Pasta do protótipo vazia ou não criada no Firebase.");
+                doorTxt.textContent = portaAberta ? "ABERTA" : "FECHADA";
+                doorTxt.style.color = portaAberta ? "#ff6b6b" : "#4ae3b5";
+                
+                if(portaAberta) {
+                    doorCard.classList.add('alerta-critico');
+                } else {
+                    doorCard.classList.remove('alerta-critico');
+                }
+                
+                // Atuadores
+                document.getElementById('fanStatus').textContent = data.ventoinha ? "LIGADA" : "DESLIGADA";
+                document.getElementById('fanStatus').style.color = data.ventoinha ? "#4ae3b5" : "#666";
+
+                document.getElementById('buzzerStatus').textContent = data.buzzer ? "ATIVO" : "DESATIVADO";
+                document.getElementById('buzzerStatus').style.color = data.buzzer ? "#ff6b6b" : "#666";
             }
         });
     }
 
-    // 3. COMANDOS DE CONTROLE (Site -> Firebase)
-    document.getElementById('cardLed').onclick = () => {
-        const atual = document.getElementById('ledStatus').textContent === "Ligado";
-        set(ref(db, `prototipos/${serialAtual}/led`), !atual);
+    // 3. CONTROLE RÁPIDO PELOS CARDS
+    document.getElementById('cardFan').onclick = () => {
+        const atual = document.getElementById('fanStatus').textContent === "LIGADA";
+        set(ref(db, `prototipos/${serialAtual}/ventoinha`), !atual);
     };
 
     document.getElementById('cardBuzzer').onclick = () => {
-        const atual = document.getElementById('buzzerStatus').textContent === "Ligado";
+        const atual = document.getElementById('buzzerStatus').textContent === "ATIVO";
         set(ref(db, `prototipos/${serialAtual}/buzzer`), !atual);
     };
 
-    // 4. FUNÇÕES DE INTERFACE (UI)
+    // 4. INTERFACE E SIDEBAR (Correção do clique fora)
     function forceShow() {
         if(loader) loader.style.display = 'none';
         if(appEl) appEl.style.display = 'flex';
@@ -174,7 +200,10 @@
     }
 
     document.addEventListener('click', (e) => {
-        if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== btnMenu) {
+        const isClickInsideSidebar = sidebar.contains(e.target);
+        const isClickOnButton = btnMenu.contains(e.target);
+
+        if (sidebar.classList.contains('active') && !isClickInsideSidebar && !isClickOnButton) {
             sidebar.classList.remove('active');
         }
     });
@@ -183,9 +212,7 @@
         signOut(auth).then(() => window.location.replace("index.html"));
     };
 
-    // Segurança para garantir que a tela apareça se o Firebase demorar
     setTimeout(forceShow, 4000);
-
 </script>
 </body>
 </html>
