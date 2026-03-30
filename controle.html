@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        /* Títulos dos cards com ícones */
+        .card h3 i {
+            margin-right: 8px;
+            color: #143458;
+            width: 20px;
+            text-align: center;
+        }
+
         /* Padronização dos botões conforme seu design */
         .btn-controle {
             width: 100%;
@@ -56,7 +64,7 @@
         <a href="quem.html"><i class="fas fa-users"></i> Quem Somos</a>
         <a href="sobre.html"><i class="fas fa-circle-info"></i> Sobre</a>
         <div class="user-info-group">
-            <p id="userSidebar" style="font-weight: bold; color: white;"></p>
+            <p id="userSidebar" style="font-weight: bold; color: white; font-size: 14px;"></p>
             <div class="divider"></div>
             <button id="logoutBtn" class="btn-danger">Sair</button>
         </div>
@@ -70,19 +78,19 @@
 
         <div class="cards">
             <div class="card">
-                <h3>🌀 VENTOINHA</h3>
+                <h3><i class="fas fa-fan"></i> VENTOINHA</h3>
                 <p id="fanStatus" style="font-size: 24px; font-weight: bold; color: #666;">AGUARDANDO...</p>
                 <button id="btnFan" class="btn-controle">Alternar Ventoinha</button>
             </div>
 
             <div class="card">
-                <h3>🔊 BUZZER (ALERTA)</h3>
+                <h3><i class="fas fa-bullhorn"></i> ALERTA SONORO</h3>
                 <p id="buzzerStatus" style="font-size: 24px; font-weight: bold; color: #666;">AGUARDANDO...</p>
                 <button id="btnBuzzer" class="btn-controle">Alternar Alerta</button>
             </div>
 
             <div class="card">
-                <h3>🚪 STATUS DA PORTA</h3>
+                <h3><i class="fas fa-door-open"></i> STATUS DA PORTA</h3>
                 <div id="doorBadge" class="status-badge">CARREGANDO...</div>
                 <p style="font-size: 12px; color: #999; margin-top: 10px;">Verifique o estado antes de agir.</p>
             </div>
@@ -116,14 +124,12 @@
 
     let serialLogado = "";
 
-    // 1. Gerenciamento de Login e Formatação do ID (Onde estava a diferença)
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Extrai apenas o ID (ex: 00001) para manter o visual limpo do Histórico
             serialLogado = user.email.split('@')[0];
             
-            // Define o texto exatamente como você quer (ex: Protótipo: 00001)
-            const idTexto = "Protótipo: " + serialLogado.toUpperCase();
+            // Texto padronizado: Protótipo: 00001
+            const idTexto = "Protótipo: " + serialLogado;
             
             document.getElementById('userSidebar').textContent = idTexto;
             document.getElementById('userTopbar').textContent = idTexto;
@@ -136,24 +142,20 @@
         }
     });
 
-    // 2. Sincronização com Firebase
     function vincularAosDados(serial) {
         const caminhoRef = ref(db, 'prototipos/' + serial);
 
         onValue(caminhoRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Status Ventoinha
                 const fanEl = document.getElementById('fanStatus');
                 fanEl.textContent = data.ventoinha ? "LIGADA" : "DESLIGADA";
                 fanEl.style.color = data.ventoinha ? "#4ae3b5" : "#ff6b6b";
 
-                // Status Buzzer
                 const buzEl = document.getElementById('buzzerStatus');
                 buzEl.textContent = data.buzzer ? "ATIVO" : "INATIVO";
                 buzEl.style.color = data.buzzer ? "#4ae3b5" : "#ff6b6b";
 
-                // Status Porta
                 const portaAberta = data.porta === true || data.porta === "aberta";
                 const badge = document.getElementById('doorBadge');
                 badge.textContent = portaAberta ? "PORTA ABERTA" : "PORTA FECHADA";
@@ -162,7 +164,6 @@
         });
     }
 
-    // 3. Ações de Clique
     document.getElementById('btnFan').onclick = () => {
         const atual = document.getElementById('fanStatus').textContent === "LIGADA";
         set(ref(db, `prototipos/${serialLogado}/ventoinha`), !atual);
@@ -178,7 +179,6 @@
         if(appEl) appEl.style.display = 'flex';
     }
 
-    // 4. Menu e Sidebar (Correção para fechar ao clicar fora)
     if(btnMenu) {
         btnMenu.onclick = (e) => {
             e.stopPropagation();
@@ -193,7 +193,6 @@
     });
 
     document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
-
 </script>
 </body>
 </html>
