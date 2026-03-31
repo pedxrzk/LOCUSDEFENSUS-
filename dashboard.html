@@ -104,9 +104,10 @@
 </div>
 
 <script type="module">
+    // Importações necessárias (Firebase v10)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
@@ -118,6 +119,7 @@
         appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
     };
 
+    // Inicialização
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
@@ -128,12 +130,12 @@
     const btnMenu = document.getElementById('menuToggle');
 
     let serialAtual = "";
+    let estadoAnteriorPorta = null; // Para evitar logs repetidos e ao carregar
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             serialAtual = user.email.split('@')[0];
             
-            // Rótulo corrigido: Protótipo: 00001
             const label = "Protótipo: " + serialAtual;
             document.getElementById('userTopbar').textContent = label;
             document.getElementById('userSidebar').textContent = label;
@@ -152,19 +154,25 @@
         onValue(caminhoRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                document.getElementById('tempValue').textContent = (data.temperatura || "0") + "°C";
-                document.getElementById('humiValue').textContent = (data.umidade || "0") + "%";
-                document.getElementById('presValue').textContent = (data.pressao || "0") + " hPa";
+                // 1. Atualiza Dados na Tela
+                const temp = (data.temperatura || "0") + "°C";
+                const humi = (data.umidade || "0") + "%";
+                const pres = (data.pressao || "1013") + " hPa";
+
+                document.getElementById('tempValue').textContent = temp;
+                document.getElementById('humiValue').textContent = humi;
+                document.getElementById('presValue').textContent = pres;
                 
+                // 2. Lógica da Porta
                 const portaAberta = data.porta === true || data.porta === "aberta";
                 const doorTxt = document.getElementById('doorStatus');
                 const doorCard = document.getElementById('cardPorta');
                 const doorIcon = document.getElementById('doorIcon');
                 
-                doorTxt.textContent = portaAberta ? "ABERTA" : "FECHADA";
+                const statusTextoAtual = portaAberta ? "ABERTA" : "FECHADA";
+                doorTxt.textContent = statusTextoAtual;
                 doorTxt.style.color = portaAberta ? "#ff6b6b" : "#4ae3b5";
                 
-                // Muda o ícone da porta dinamicamente
                 if(portaAberta) {
                     doorCard.classList.add('alerta-critico');
                     doorIcon.className = "fas fa-door-open";
@@ -172,17 +180,34 @@
                     doorCard.classList.remove('alerta-critico');
                     doorIcon.className = "fas fa-door-closed";
                 }
-                
+
+                // --- 3. GRAVAÇÃO NO HISTÓRICO ---
+                // Só grava se o estado mudou e se não é a primeira leitura da página
+                if (estadoAnteriorPorta !== null && statusTextoAtual !== estadoAnteriorPorta) {
+                    const historicoRef = ref(db, 'historico/' + serial);
+                    
+                    push(historicoRef, {
+                        data: new Date().toLocaleDateString('pt-BR'),
+                        evento: `PORTA FOI ${statusTextoAtual}`,
+                        hora: new Date().toLocaleTimeString('pt-BR'),
+                        temperatura: temp,
+                        umidade: humi,
+                        pressao: pres
+                    });
+                    console.log("Evento registrado no histórico com sucesso!");
+                }
+                estadoAnteriorPorta = statusTextoAtual;
+
+                // 4. Ventoinha e Buzzer
                 document.getElementById('fanStatus').textContent = data.ventoinha ? "LIGADA" : "DESLIGADA";
                 document.getElementById('fanStatus').style.color = data.ventoinha ? "#4ae3b5" : "#666";
-
                 document.getElementById('buzzerStatus').textContent = data.buzzer ? "ATIVO" : "DESATIVADO";
                 document.getElementById('buzzerStatus').style.color = data.buzzer ? "#ff6b6b" : "#666";
             }
         });
     }
 
-    // Controles Rápidos
+    // Controles Manuais (Card Click)
     document.getElementById('cardFan').onclick = () => {
         const atual = document.getElementById('fanStatus').textContent === "LIGADA";
         set(ref(db, `prototipos/${serialAtual}/ventoinha`), !atual);
@@ -193,6 +218,7 @@
         set(ref(db, `prototipos/${serialAtual}/buzzer`), !atual);
     };
 
+    // UI Helpers
     function forceShow() {
         if(loader) loader.style.display = 'none';
         if(appEl) appEl.style.display = 'flex';
