@@ -16,13 +16,13 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             animation: fadeIn 0.4s ease;
         }
+        /* Cores baseadas no evento contido no texto */
         .card-historico.aberta { border-left-color: #ff6b6b; }
         .card-historico.fechada { border-left-color: #4ae3b5; }
         
         .card-historico h3 { font-size: 13px; color: #888; margin: 0; }
         .card-historico p { font-size: 16px; font-weight: bold; margin: 5px 0; color: #143458; }
         
-        /* Grid para as informações ambientais */
         .info-extras {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -85,7 +85,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, push, serverTimestamp, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDbsCJu94nErqRYQM67BD9OR9lPVkieR4M",
@@ -102,7 +102,6 @@
     const db = getDatabase(app);
 
     const container = document.getElementById('historicoCards');
-    let ultimaPortaStatus = null; 
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -111,7 +110,9 @@
             document.getElementById('userSidebar').textContent = label;
             document.getElementById('userTopbar').textContent = label;
             
-            ativarLogsReais(serialLogado);
+            // Inicia a escuta dos logs salvos pelo Dashboard
+            carregarHistorico(serialLogado);
+            
             document.getElementById('loadingOverlay').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
         } else {
@@ -119,95 +120,78 @@
         }
     });
 
-    async function ativarLogsReais(serial) {
-        const rootRef = ref(db, `prototipos/${serial}`);
-        const portaRef = ref(db, `prototipos/${serial}/porta`);
-        const logsRef = ref(db, `prototipos/${serial}/logs_acesso`);
+    function carregarHistorico(serial) {
+        // Referência exata de onde o Dashboard salva os dados
+        const logsRef = ref(db, `historico/${serial}`);
 
-        // ESCUTA A MUDANÇA DA PORTA E BUSCA DADOS AMBIENTAIS
-        onValue(portaRef, async (snapshot) => {
-            const val = snapshot.val();
-            const statusAtual = (val === true || val === "aberta") ? "aberta" : "fechada";
-            
-            if (ultimaPortaStatus !== null && ultimaPortaStatus !== statusAtual) {
-                // LER OS DADOS DE TEMPERATURA/UMIDADE/PRESSÃO ANTES DE SALVAR O LOG
-                const snapshotDados = await get(rootRef);
-                const dadosAtuais = snapshotDados.val();
-
-                const agora = new Date();
-                push(logsRef, {
-                    tipo: statusAtual,
-                    data: agora.toLocaleDateString('pt-BR'),
-                    hora: agora.toLocaleTimeString('pt-BR'),
-                    // Pega as chaves exatas do seu Firebase: temperatura, umidade, pressao
-                    temp: dadosAtuais.temperatura || 0,
-                    umid: dadosAtuais.umidade || 0,
-                    pres: dadosAtuais.pressao || 0,
-                    timestamp: serverTimestamp()
-                });
-            }
-            ultimaPortaStatus = statusAtual;
-        });
-
-        // EXIBE OS LOGS NA TELA
-        const consultaLogs = query(logsRef, limitToLast(30));
+        // Busca os últimos 50 registros em tempo real
+        const consultaLogs = query(logsRef, limitToLast(50));
+        
         onValue(consultaLogs, (snapshot) => {
             container.innerHTML = "";
             const data = snapshot.val();
             
             if (data) {
-                Object.values(data).reverse().forEach(log => {
+                // Inverte a ordem para que o mais recente apareça primeiro
+                const registros = Object.values(data).reverse();
+                registros.forEach(log => {
                     renderizarCard(log);
                 });
             } else {
-                container.innerHTML = "<p style='text-align:center; color:#999; padding: 40px;'>Nenhum log gerado ainda.</p>";
+                container.innerHTML = "<p style='text-align:center; color:#999; padding: 40px;'>Nenhum registro encontrado no histórico.</p>";
             }
         });
     }
 
     function renderizarCard(item) {
+        // Detecta se foi aberta ou fechada para aplicar a cor correta
+        const isAberta = item.evento.includes("ABERTA");
+        const classeTipo = isAberta ? 'aberta' : 'fechada';
+        const iconePorta = isAberta ? 'fa-door-open' : 'fa-door-closed';
+
         const article = document.createElement('article');
-        article.className = `card card-historico ${item.tipo}`;
-        const icone = item.tipo === 'aberta' ? 'fa-door-open' : 'fa-door-closed';
-        const texto = item.tipo === 'aberta' ? 'PORTA FOI ABERTA' : 'PORTA FOI FECHADA';
+        article.className = `card-historico ${classeTipo}`;
 
         article.innerHTML = `
             <h3>${item.data}</h3>
-            <p><i class="fas ${icone}"></i> ${texto}</p>
+            <p><i class="fas ${iconePorta}"></i> ${item.evento}</p>
             
             <div class="info-extras">
                 <div class="info-item">
                     <i class="fas fa-thermometer-half"></i>
-                    <span>${item.temp}°C</span>
+                    <span>${item.temperatura || '--'}</span>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-droplet"></i>
-                    <span>${item.umid}%</span>
+                    <span>${item.umidade || '--'}</span>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-gauge-high"></i>
-                    <span>${item.pres} hPa</span>
+                    <span>${item.pressao || '--'}</span>
                 </div>
             </div>
             
-            <small><i class="fas fa-clock"></i> Registro: ${item.hora}</small>
+            <small><i class="fas fa-clock"></i> Horário do Evento: ${item.hora}</small>
         `;
         container.appendChild(article);
     }
 
-    // Sidebar & Menu
+    // Interatividade da Sidebar
     document.getElementById('menuToggle').onclick = (e) => { 
         e.stopPropagation(); 
         document.getElementById('sidebar').classList.toggle('active'); 
     };
     
     document.addEventListener('click', (e) => { 
-        if (!document.getElementById('sidebar').contains(e.target)) {
-            document.getElementById('sidebar').classList.remove('active'); 
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+            sidebar.classList.remove('active'); 
         }
     });
 
-    document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.replace("index.html"));
+    document.getElementById('logoutBtn').onclick = () => {
+        signOut(auth).then(() => window.location.replace("index.html"));
+    };
 </script>
 </body>
 </html>
