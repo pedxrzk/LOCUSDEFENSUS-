@@ -1,0 +1,15 @@
+{
+  "name": "Locus Defensus",
+  "short_name": "Locus",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#143458",
+  "theme_color": "#143458",
+  "icons": [
+    {
+      "src": "logo.sidebar.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
