@@ -118,9 +118,9 @@
         appId: "1:130929270335:web:8bcdad7cb048b1ec4fa28a",
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    const db = getDatabase(firebaseApp);
 
     const loader = document.getElementById('loadingOverlay');
     const appEl = document.getElementById('app');
@@ -128,17 +128,22 @@
     const btnMenu = document.getElementById('menuToggle');
 
     let serialAtual = "";
+    let jaNotificouPorta = false; // Controle de notificação
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             serialAtual = user.email.split('@')[0];
             
-            // Rótulo corrigido: Protótipo: 00001
             const label = "Protótipo: " + serialAtual;
             document.getElementById('userTopbar').textContent = label;
             document.getElementById('userSidebar').textContent = label;
             document.getElementById('tituloPainel').textContent = "Monitoramento " + serialAtual;
             
+            // Solicita permissão de notificação push assim que logar
+            if ("Notification" in window) {
+                Notification.requestPermission();
+            }
+
             iniciarMonitoramento(serialAtual);
             forceShow();
         } else {
@@ -152,11 +157,13 @@
         onValue(caminhoRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
+                // Sensores
                 document.getElementById('tempValue').textContent = (data.temperatura || "0") + "°C";
                 document.getElementById('humiValue').textContent = (data.umidade || "0") + "%";
                 document.getElementById('presValue').textContent = (data.pressao || "0") + " hPa";
                 
-                const portaAberta = data.porta === true || data.porta === "aberta";
+                // Lógica da Porta
+                const portaAberta = data.porta === true || data.porta === "aberta" || data.porta === "ABERTA";
                 const doorTxt = document.getElementById('doorStatus');
                 const doorCard = document.getElementById('cardPorta');
                 const doorIcon = document.getElementById('doorIcon');
@@ -164,15 +171,25 @@
                 doorTxt.textContent = portaAberta ? "ABERTA" : "FECHADA";
                 doorTxt.style.color = portaAberta ? "#ff6b6b" : "#4ae3b5";
                 
-                // Muda o ícone da porta dinamicamente
                 if(portaAberta) {
                     doorCard.classList.add('alerta-critico');
                     doorIcon.className = "fas fa-door-open";
+                    
+                    // DISPARAR NOTIFICAÇÃO PUSH NO CELULAR
+                    if (!jaNotificouPorta && Notification.permission === "granted") {
+                        new Notification("Locus Defensus - ALERTA", {
+                            body: "A porta do protótipo " + serial + " foi ABERTA!",
+                            icon: "logo.sidebar.png"
+                        });
+                        jaNotificouPorta = true;
+                    }
                 } else {
                     doorCard.classList.remove('alerta-critico');
                     doorIcon.className = "fas fa-door-closed";
+                    jaNotificouPorta = false; // Reseta para avisar na próxima abertura
                 }
                 
+                // Status Atuadores
                 document.getElementById('fanStatus').textContent = data.ventoinha ? "LIGADA" : "DESLIGADA";
                 document.getElementById('fanStatus').style.color = data.ventoinha ? "#4ae3b5" : "#666";
 
@@ -182,7 +199,7 @@
         });
     }
 
-    // Controles Rápidos
+    // Comandos de Controle (Firebase Set)
     document.getElementById('cardFan').onclick = () => {
         const atual = document.getElementById('fanStatus').textContent === "LIGADA";
         set(ref(db, `prototipos/${serialAtual}/ventoinha`), !atual);
@@ -198,6 +215,7 @@
         if(appEl) appEl.style.display = 'flex';
     }
 
+    // Interações de Menu
     if(btnMenu) {
         btnMenu.onclick = (e) => {
             e.stopPropagation();
@@ -216,33 +234,6 @@
     };
 
     setTimeout(forceShow, 4000);
-import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-// Referência para o estado da porta no protótipo 00001
-const portaRef = ref(db, 'prototipos/00001/porta');
-
-// Variável para evitar notificações repetidas sem parar
-let jaNotificou = false;
-
-onValue(portaRef, (snapshot) => {
-    const portaAberta = snapshot.val();
-
-    if (portaAberta === true && !jaNotificou) {
-        // DISPARA A NOTIFICAÇÃO DO APP
-        if (Notification.permission === "granted") {
-            new Notification("Locus Defensus - ALERTA", {
-                body: "A porta do protótipo 00001 foi ABERTA!",
-                icon: "logo.png", // certifique-se que o arquivo existe
-                vibrate: [200, 100, 200]
-            });
-            jaNotificou = true; // Marca como notificado
-        }
-    } else if (portaAberta === false) {
-        jaNotificou = false; // Reseta quando a porta fechar
-    }
-});
-
-
 </script>
 </body>
 </html>
