@@ -217,29 +217,6 @@
 
     setTimeout(forceShow, 4000);
 
-// Função para registrar o Push Notification no webtoapp.design
-async function configurarPush() {
-    // 1. Pedir permissão ao usuário
-    const permissao = await Notification.requestPermission();
-    
-    if (permissao === "granted") {
-        console.log("Permissão concedida!");
-        
-        // 2. O webtoapp.design injeta automaticamente uma função chamada 'getPushToken'
-        // Verificamos se ela existe (só existirá dentro do APK instalado)
-        if (typeof getPushToken === "function") {
-            getPushToken().then(token => {
-                console.log("Token do aparelho:", token);
-                // Opcional: Salvar este token no Firebase sob o UID do usuário
-                // para enviar notificações personalizadas depois.
-            });
-        }
-    }
-}
-
-// Chamar a função ao carregar a página
-configurarPush();
-
 </script>
 </body>
 </html>
