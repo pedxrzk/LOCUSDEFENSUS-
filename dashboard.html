@@ -216,6 +216,32 @@
     };
 
     setTimeout(forceShow, 4000);
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+// Referência para o estado da porta no protótipo 00001
+const portaRef = ref(db, 'prototipos/00001/porta');
+
+// Variável para evitar notificações repetidas sem parar
+let jaNotificou = false;
+
+onValue(portaRef, (snapshot) => {
+    const portaAberta = snapshot.val();
+
+    if (portaAberta === true && !jaNotificou) {
+        // DISPARA A NOTIFICAÇÃO DO APP
+        if (Notification.permission === "granted") {
+            new Notification("Locus Defensus - ALERTA", {
+                body: "A porta do protótipo 00001 foi ABERTA!",
+                icon: "logo.png", // certifique-se que o arquivo existe
+                vibrate: [200, 100, 200]
+            });
+            jaNotificou = true; // Marca como notificado
+        }
+    } else if (portaAberta === false) {
+        jaNotificou = false; // Reseta quando a porta fechar
+    }
+});
+
 
 </script>
 </body>
